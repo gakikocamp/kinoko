@@ -2,6 +2,7 @@
 import type { StoreInfo } from "../lib/site";
 import { ORG } from "../lib/site";
 import { fetchNoteNews } from "../lib/note-rss";
+import { withBase } from "../lib/url";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/Hero.astro";
 import NewsList from "../components/NewsList.astro";
@@ -83,7 +84,7 @@ const features = [
         </p>
       </div>
       <p style="text-align:center;margin-top:24px">
-        <a class="btn btn--ghost" href="/access">アクセス・営業時間を見る</a>
+        <a class="btn btn--ghost" href={withBase("/access")}>アクセス・営業時間を見る</a>
       </p>
     </div>
   </section>
@@ -136,7 +137,7 @@ const features = [
       <div class="grid grid--3">
         {
           features.map((f) => (
-            <a class="feature card" href={f.href} style={`--accent:${f.accent}`}>
+            <a class="feature card" href={withBase(f.href)} style={`--accent:${f.accent}`}>
               <div class="feature__body">
                 <h3 class="feature__title">{f.title}</h3>
                 <p class="feature__text">{f.text}</p>
@@ -156,7 +157,7 @@ const features = [
       <p class="section-lead">最新情報は note で発信しています。</p>
       <NewsList items={news} emptyHint={true} />
       <p style="text-align:center; margin-top:24px">
-        <a class="btn btn--ghost" href="/news">お知らせ一覧へ</a>
+        <a class="btn btn--ghost" href={withBase("/news")}>お知らせ一覧へ</a>
       </p>
     </div>
   </section>

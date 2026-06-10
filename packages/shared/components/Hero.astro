@@ -1,5 +1,6 @@
 ---
 import type { StoreInfo } from "../lib/site";
+import { withBase } from "../lib/url";
 
 interface Props {
   store: StoreInfo;
@@ -17,7 +18,7 @@ const { store } = Astro.props;
         アネラカフェ{store.shortName}へようこそ。
       </p>
       <div class="hero__actions">
-        <a class="btn btn--primary" href="/access">アクセス・営業時間</a>
+        <a class="btn btn--primary" href={withBase("/access")}>アクセス・営業時間</a>
         <a class="btn btn--ghost" href={store.instagram} target="_blank" rel="noopener">
           Instagramを見る
         </a>

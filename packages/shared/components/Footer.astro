@@ -1,6 +1,7 @@
 ---
 import type { StoreInfo } from "../lib/site";
 import { ORG } from "../lib/site";
+import { withBase } from "../lib/url";
 
 interface Props {
   store: StoreInfo;
@@ -18,12 +19,12 @@ const year = new Date().getFullYear();
     </div>
 
     <nav class="site-footer__nav" aria-label="フッターナビゲーション">
-      <a href="/access">アクセス</a>
-      <a href="/news">お知らせ</a>
-      <a href="/adoption">里親募集</a>
-      <a href="/welfare">就労支援</a>
-      <a href="/recruit">スタッフ募集</a>
-      <a href="/contact">お問い合わせ</a>
+      <a href={withBase("/access")}>アクセス</a>
+      <a href={withBase("/news")}>お知らせ</a>
+      <a href={withBase("/adoption")}>里親募集</a>
+      <a href={withBase("/welfare")}>就労支援</a>
+      <a href={withBase("/recruit")}>スタッフ募集</a>
+      <a href={withBase("/contact")}>お問い合わせ</a>
     </nav>
 
     <div class="site-footer__links">

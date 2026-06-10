@@ -1,5 +1,6 @@
 ---
 import type { StoreInfo } from "../lib/site";
+import { withBase } from "../lib/url";
 
 interface Props {
   store: StoreInfo;
@@ -23,7 +24,7 @@ const isActive = (href: string) =>
 
 <header class="site-header">
   <div class="container site-header__inner">
-    <a href="/" class="brand">
+    <a href={withBase("/")} class="brand">
       <span class="brand__name">アネラカフェ</span>
       <span class="brand__store">{store.shortName}</span>
     </a>
@@ -37,7 +38,7 @@ const isActive = (href: string) =>
       {
         nav.map((item) => (
           <a
-            href={item.href}
+            href={withBase(item.href)}
             class:list={["site-nav__link", { "is-active": isActive(item.href) }]}
             aria-current={isActive(item.href) ? "page" : undefined}
           >

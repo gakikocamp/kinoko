@@ -1,6 +1,9 @@
 import { defineConfig } from "astro/config";
 
-// 大濠店サイト。公開URLは独自ドメイン取得後に差し替える。
+// 大濠店サイト。
+// 本番（独自ドメイン）はルート公開。GitHub Pages プレビュー時のみ
+// 環境変数 PAGES_BASE（例: "/kinoko/ohori"）でサブパスに対応する。
 export default defineConfig({
-  site: "https://ohori.anela-cafe.example",
+  site: process.env.SITE_URL || "https://ohori.anela-cafe.example",
+  base: process.env.PAGES_BASE || undefined,
 });

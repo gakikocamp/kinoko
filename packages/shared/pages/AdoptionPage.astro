@@ -2,6 +2,7 @@
 import type { StoreInfo } from "../lib/site";
 import { ORG } from "../lib/site";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { withBase } from "../lib/url";
 import { Content as AdoptionContent } from "../content/adoption.md";
 
 interface Props {
@@ -31,7 +32,7 @@ const { store } = Astro.props;
           <p style="margin-top:0">
             気になる子がいたら、まずは{store.shortName}までお気軽にご相談ください。
           </p>
-          <a class="btn btn--ghost" href="/contact">お問い合わせ</a>
+          <a class="btn btn--ghost" href={withBase("/contact")}>お問い合わせ</a>
         </div>
       </div>
     </div>

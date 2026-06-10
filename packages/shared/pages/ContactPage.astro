@@ -2,6 +2,7 @@
 import type { StoreInfo } from "../lib/site";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ContactMethods from "../components/ContactMethods.astro";
+import { withBase } from "../lib/url";
 
 interface Props {
   store: StoreInfo;
@@ -28,7 +29,7 @@ const { store } = Astro.props;
           {store.access}
         </p>
         <p style="margin-bottom:0">
-          <a class="btn btn--ghost" href="/access">アクセス・営業時間を見る</a>
+          <a class="btn btn--ghost" href={withBase("/access")}>アクセス・営業時間を見る</a>
         </p>
       </div>
     </div>
