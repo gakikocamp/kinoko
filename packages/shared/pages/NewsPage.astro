@@ -1,0 +1,39 @@
+---
+import type { StoreInfo } from "../lib/site";
+import { ORG } from "../lib/site";
+import { fetchNoteNews } from "../lib/note-rss";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import NewsList from "../components/NewsList.astro";
+
+interface Props {
+  store: StoreInfo;
+}
+const { store } = Astro.props;
+const news = await fetchNoteNews(ORG.noteAccount, 30);
+const noteUrl = ORG.noteAccount ? `https://note.com/${ORG.noteAccount}` : null;
+---
+
+<BaseLayout store={store} path="/news" title="お知らせ">
+  <section class="section">
+    <div class="container" style="max-width:760px">
+      <span class="eyebrow" style="display:block;text-align:center">News</span>
+      <h1 class="section-title">お知らせ</h1>
+      <p class="section-lead">
+        日々の様子やイベント情報は note で発信しています。<br />
+        最新の記事を自動で表示しています。
+      </p>
+
+      <NewsList items={news} emptyHint={true} />
+
+      {
+        noteUrl && (
+          <p style="text-align:center; margin-top:28px">
+            <a class="btn btn--primary" href={noteUrl} target="_blank" rel="noopener">
+              noteで記事一覧を見る
+            </a>
+          </p>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>

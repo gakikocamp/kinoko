@@ -1,0 +1,85 @@
+---
+import type { StoreInfo } from "../lib/site";
+import { ORG } from "../lib/site";
+
+interface Props {
+  store: StoreInfo;
+}
+const { store } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__grid">
+    <div>
+      <p class="site-footer__brand">アネラカフェ {store.shortName}</p>
+      <p class="site-footer__addr">{store.address}</p>
+      <p class="site-footer__addr">TEL: <a href={`tel:${store.tel}`}>{store.tel}</a></p>
+    </div>
+
+    <nav class="site-footer__nav" aria-label="フッターナビゲーション">
+      <a href="/menu">メニュー</a>
+      <a href="/access">アクセス</a>
+      <a href="/news">お知らせ</a>
+      <a href="/adoption">里親募集</a>
+      <a href="/welfare">就労支援</a>
+      <a href="/recruit">スタッフ募集</a>
+      <a href="/contact">お問い合わせ</a>
+    </nav>
+
+    <div class="site-footer__links">
+      <a href={store.instagram} target="_blank" rel="noopener">Instagram（{store.shortName}）</a>
+      <a href={store.sister.url}>姉妹店：{store.sister.name}</a>
+    </div>
+  </div>
+
+  <p class="site-footer__copy">© {year} {ORG.operator}</p>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--brown-deep);
+    color: var(--cream);
+    padding-block: 48px 24px;
+    margin-top: 64px;
+  }
+  .site-footer a {
+    color: var(--cream);
+  }
+  .site-footer a:hover {
+    color: var(--white);
+  }
+  .site-footer__grid {
+    display: grid;
+    gap: 28px;
+  }
+  @media (min-width: 720px) {
+    .site-footer__grid {
+      grid-template-columns: 1.2fr 1fr 1fr;
+    }
+  }
+  .site-footer__brand {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+  .site-footer__addr {
+    margin: 2px 0;
+    font-size: 0.9rem;
+    color: color-mix(in srgb, var(--cream) 85%, transparent);
+  }
+  .site-footer__nav,
+  .site-footer__links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.9rem;
+  }
+  .site-footer__copy {
+    text-align: center;
+    margin: 32px 0 0;
+    font-size: 0.8rem;
+    color: color-mix(in srgb, var(--cream) 70%, transparent);
+  }
+</style>

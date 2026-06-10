@@ -1,0 +1,164 @@
+---
+import type { StoreInfo } from "../lib/site";
+import { ORG } from "../lib/site";
+import { fetchNoteNews } from "../lib/note-rss";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/Hero.astro";
+import NewsList from "../components/NewsList.astro";
+
+interface Props {
+  store: StoreInfo;
+}
+const { store } = Astro.props;
+const news = await fetchNoteNews(ORG.noteAccount, 3);
+
+const features = [
+  {
+    href: "/adoption",
+    title: "里親募集",
+    text: "新しい家族を待つ保護犬たち。最新の子はInstagramで発信しています。",
+    accent: "var(--green)",
+  },
+  {
+    href: "/welfare",
+    title: "就労支援（B型）",
+    text: "自分のペースで働ける場所。見学・ご相談はいつでも歓迎です。",
+    accent: "var(--brown)",
+  },
+  {
+    href: "/recruit",
+    title: "スタッフ募集",
+    text: "カフェと福祉、両方を大切にする仲間を募集しています。",
+    accent: "var(--gold)",
+  },
+];
+---
+
+<BaseLayout store={store} path="/">
+  <Hero store={store} />
+
+  <!-- コンセプト -->
+  <section class="section">
+    <div class="container split">
+      <div>
+        <span class="eyebrow">Concept</span>
+        <h2 class="section-title" style="text-align:left">
+          コーヒーと、保護犬と、<br />まちのやさしい居場所
+        </h2>
+        <p>
+          アネラカフェ{store.shortName}は、おいしいコーヒーを楽しめるカフェであると同時に、
+          保護犬の里親探しや、就労継続支援B型の場としても地域に開かれたお店です。
+        </p>
+        <p>
+          ふらっと立ち寄って、ゆっくり過ごす。そんな何気ない時間が、
+          人にも動物にもやさしい循環につながればと願っています。
+        </p>
+      </div>
+      <div class="ph ph--wide" role="img" aria-label="カフェの雰囲気（写真準備中）">
+        カフェの雰囲気の写真
+      </div>
+    </div>
+  </section>
+
+  {/* ギャラリー（store.gallery に画像があるときだけ表示） */}
+  {
+    store.gallery && store.gallery.length > 0 && (
+      <section class="section section--tight">
+        <div class="container">
+          <h2 class="section-title">ギャラリー</h2>
+          <p class="section-lead">日々の様子は Instagram で発信中。</p>
+          <div class="gallery">
+            {store.gallery.map((g) => (
+              <img class="gallery__img" src={g.src} alt={g.alt} loading="lazy" />
+            ))}
+          </div>
+          <p style="text-align:center; margin-top:24px">
+            <a class="btn btn--ghost" href={store.instagram} target="_blank" rel="noopener">
+              もっと見る（Instagram）
+            </a>
+          </p>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 取り組み -->
+  <section class="section bg-deep">
+    <div class="container">
+      <h2 class="section-title">アネラカフェの3つの取り組み</h2>
+      <p class="section-lead">カフェを入り口に、できることを少しずつ。</p>
+      <div class="grid grid--3">
+        {
+          features.map((f) => (
+            <a class="feature card" href={f.href} style={`--accent:${f.accent}`}>
+              <div class="feature__body">
+                <h3 class="feature__title">{f.title}</h3>
+                <p class="feature__text">{f.text}</p>
+                <span class="feature__more">くわしく見る →</span>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- お知らせ -->
+  <section class="section">
+    <div class="container" style="max-width:760px">
+      <h2 class="section-title">お知らせ</h2>
+      <p class="section-lead">最新情報は note で発信しています。</p>
+      <NewsList items={news} emptyHint={true} />
+      <p style="text-align:center; margin-top:24px">
+        <a class="btn btn--ghost" href="/news">お知らせ一覧へ</a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .feature {
+    display: block;
+    padding: 0;
+    border-top: 4px solid var(--accent, var(--brown));
+  }
+  .feature:hover {
+    text-decoration: none;
+    transform: translateY(-3px);
+    transition: transform 0.15s ease;
+  }
+  .feature__body {
+    padding: 24px;
+  }
+  .feature__title {
+    margin: 0 0 8px;
+    font-size: 1.2rem;
+  }
+  .feature__text {
+    color: var(--ink-soft);
+    margin: 0 0 12px;
+    font-size: 0.95rem;
+  }
+  .feature__more {
+    font-weight: 700;
+    color: var(--terracotta-deep);
+    font-size: 0.9rem;
+  }
+
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  @media (min-width: 640px) {
+    .gallery {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .gallery__img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+</style>

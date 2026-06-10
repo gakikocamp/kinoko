@@ -1,0 +1,36 @@
+---
+import type { StoreInfo } from "../lib/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ContactMethods from "../components/ContactMethods.astro";
+
+interface Props {
+  store: StoreInfo;
+}
+const { store } = Astro.props;
+---
+
+<BaseLayout store={store} path="/contact" title="お問い合わせ">
+  <section class="section">
+    <div class="container" style="max-width:760px">
+      <span class="eyebrow" style="display:block;text-align:center">Contact</span>
+      <h1 class="section-title">お問い合わせ</h1>
+      <p class="section-lead">
+        ご来店・メニュー・里親・就労支援・スタッフ募集など、お気軽にご連絡ください。
+      </p>
+
+      <ContactMethods store={store} />
+
+      <div class="card" style="padding:24px;margin-top:28px">
+        <h2 style="margin-top:0;font-size:1.1rem">店舗情報</h2>
+        <p>
+          <strong>{store.name}</strong><br />
+          {store.address}<br />
+          {store.access}
+        </p>
+        <p style="margin-bottom:0">
+          <a class="btn btn--ghost" href="/access">アクセス・営業時間を見る</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

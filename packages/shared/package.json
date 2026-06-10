@@ -1,0 +1,10 @@
+{
+  "name": "@anela/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "2サイト共通のレイアウト・コンポーネント・コンテンツ・ユーティリティ",
+  "dependencies": {
+    "fast-xml-parser": "^4.5.0"
+  }
+}

@@ -1,0 +1,99 @@
+---
+import type { NewsItem } from "../lib/note-rss";
+
+interface Props {
+  items: NewsItem[];
+  /** noteアカウント未設定/取得失敗時に表示する案内のためのアカウント名 */
+  emptyHint?: boolean;
+}
+const { items, emptyHint = false } = Astro.props;
+---
+
+{
+  items.length > 0 ? (
+    <ul class="news">
+      {items.map((item) => (
+        <li class="news__item">
+          <a href={item.link} target="_blank" rel="noopener" class="news__link">
+            {item.image ? (
+              <img class="news__thumb" src={item.image} alt="" loading="lazy" />
+            ) : (
+              <span class="news__thumb news__thumb--ph" aria-hidden="true">note</span>
+            )}
+            <span class="news__body">
+              <time class="news__date">{item.dateLabel}</time>
+              <span class="news__title">{item.title}</span>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p class="news__empty">
+      {emptyHint
+        ? "お知らせは note で発信しています。準備が整い次第ここに最新記事を表示します。"
+        : "現在お知らせはありません。"}
+    </p>
+  )
+}
+
+<style>
+  .news {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+  }
+  .news__link {
+    display: grid;
+    grid-template-columns: 84px 1fr;
+    gap: 16px;
+    align-items: center;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px;
+    transition: box-shadow 0.15s ease;
+  }
+  .news__link:hover {
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+  }
+  .news__thumb {
+    width: 84px;
+    height: 84px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  .news__thumb--ph {
+    display: grid;
+    place-content: center;
+    background: var(--cream-deep);
+    color: var(--ink-soft);
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+  .news__body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .news__date {
+    font-size: 0.78rem;
+    color: var(--terracotta-deep);
+    font-weight: 700;
+  }
+  .news__title {
+    color: var(--ink);
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  .news__empty {
+    text-align: center;
+    color: var(--ink-soft);
+    background: var(--cream-deep);
+    border-radius: var(--radius);
+    padding: 28px;
+  }
+</style>

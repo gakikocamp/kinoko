@@ -1,0 +1,90 @@
+---
+import type { StoreInfo } from "../lib/site";
+
+interface Props {
+  store: StoreInfo;
+  /** 見出し（例: "見学のお申し込み" / "ご応募・お問い合わせ"） */
+  heading?: string;
+  /** メールの件名プリセット */
+  mailSubject?: string;
+}
+const { store, heading, mailSubject } = Astro.props;
+const mailto = mailSubject
+  ? `mailto:${store.email}?subject=${encodeURIComponent(mailSubject)}`
+  : `mailto:${store.email}`;
+---
+
+<div class="contact-methods">
+  {heading && <h3 class="contact-methods__heading">{heading}</h3>}
+  <p class="contact-methods__note">
+    下記のいずれかの方法でお気軽にご連絡ください。お電話・営業時間内のご来店も歓迎です。
+  </p>
+  <div class="contact-methods__grid">
+    <a class="contact-card" href={mailto}>
+      <span class="contact-card__label">メール</span>
+      <span class="contact-card__value">{store.email}</span>
+    </a>
+    <a class="contact-card" href={`tel:${store.tel}`}>
+      <span class="contact-card__label">電話</span>
+      <span class="contact-card__value">{store.tel}</span>
+    </a>
+    <a class="contact-card" href={store.instagram} target="_blank" rel="noopener">
+      <span class="contact-card__label">Instagram DM</span>
+      <span class="contact-card__value">@{store.shortName}のアカウントへ</span>
+    </a>
+  </div>
+</div>
+
+<style>
+  .contact-methods {
+    background: var(--cream-deep);
+    border-radius: var(--radius-lg);
+    padding: 32px 24px;
+  }
+  .contact-methods__heading {
+    text-align: center;
+    margin: 0 0 8px;
+    font-size: 1.2rem;
+  }
+  .contact-methods__note {
+    text-align: center;
+    color: var(--ink-soft);
+    margin: 0 auto 24px;
+    max-width: 540px;
+  }
+  .contact-methods__grid {
+    display: grid;
+    gap: 14px;
+  }
+  @media (min-width: 720px) {
+    .contact-methods__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .contact-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px;
+    text-align: center;
+    transition: transform 0.15s ease;
+  }
+  .contact-card:hover {
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
+  .contact-card__label {
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    color: var(--terracotta);
+    font-weight: 700;
+  }
+  .contact-card__value {
+    color: var(--ink);
+    font-weight: 600;
+    word-break: break-all;
+  }
+</style>

@@ -1,0 +1,39 @@
+---
+import type { StoreInfo } from "../lib/site";
+import { ORG } from "../lib/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { Content as AdoptionContent } from "../content/adoption.md";
+
+interface Props {
+  store: StoreInfo;
+}
+const { store } = Astro.props;
+---
+
+<BaseLayout store={store} path="/adoption" title="里親募集">
+  <section class="section">
+    <div class="container">
+      <span class="eyebrow" style="display:block;text-align:center">Adoption</span>
+      <h1 class="section-title">里親募集</h1>
+
+      <div style="text-align:center;margin-bottom:32px">
+        <a class="btn btn--primary" href={ORG.adoptionInstagram} target="_blank" rel="noopener">
+          いま出会える子をInstagramで見る
+        </a>
+      </div>
+
+      <article class="prose">
+        <AdoptionContent />
+      </article>
+
+      <div style="margin-top:40px;max-width:720px;margin-inline:auto">
+        <div class="card" style="padding:24px;text-align:center">
+          <p style="margin-top:0">
+            気になる子がいたら、まずは{store.shortName}までお気軽にご相談ください。
+          </p>
+          <a class="btn btn--ghost" href="/contact">お問い合わせ</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

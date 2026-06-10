@@ -1,0 +1,48 @@
+---
+import type { StoreInfo } from "../lib/site";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import "../styles/global.css";
+
+interface Props {
+  store: StoreInfo;
+  /** ページ固有タイトル（店名は自動で付与） */
+  title?: string;
+  description?: string;
+  /** 現在のパス（ナビのハイライト用） 例: "/menu" */
+  path?: string;
+}
+
+const { store, title, description, path = "/" } = Astro.props;
+const fullTitle = title ? `${title}｜${store.name}` : store.name;
+const desc =
+  description ??
+  `${store.name}の公式サイト。${store.tagline} 保護犬の里親募集・B型就労支援・スタッフ募集の情報もこちら。`;
+const canonical = new URL(path, store.url).toString();
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- OGP -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={store.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <Header store={store} path={path} />
+    <main>
+      <slot />
+    </main>
+    <Footer store={store} />
+  </body>
+</html>

@@ -1,0 +1,32 @@
+---
+import type { StoreInfo } from "../lib/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ContactMethods from "../components/ContactMethods.astro";
+import { Content as RecruitContent } from "../content/recruit.md";
+
+interface Props {
+  store: StoreInfo;
+}
+const { store } = Astro.props;
+---
+
+<BaseLayout store={store} path="/recruit" title="スタッフ募集">
+  <section class="section">
+    <div class="container">
+      <span class="eyebrow" style="display:block;text-align:center">Recruit</span>
+      <h1 class="section-title">スタッフ募集</h1>
+
+      <article class="prose">
+        <RecruitContent />
+      </article>
+
+      <div style="margin-top:40px;max-width:720px;margin-inline:auto">
+        <ContactMethods
+          store={store}
+          heading="ご応募・お問い合わせ"
+          mailSubject="スタッフ募集の件"
+        />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
