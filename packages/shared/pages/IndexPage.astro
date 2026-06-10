@@ -61,6 +61,33 @@ const features = [
     </div>
   </section>
 
+  {/* ご利用案内（ドリンクバー形式） */}
+  <section class="section bg-deep">
+    <div class="container" style="max-width:760px">
+      <span class="eyebrow" style="display:block;text-align:center">Drink Bar</span>
+      <h2 class="section-title">ご利用案内</h2>
+      <p class="section-lead">{ORG.drinkBar.lead}</p>
+      <div class="card" style="padding:24px">
+        <ul class="pricing">
+          {
+            ORG.drinkBar.items.map((i) => (
+              <li class="pricing__row">
+                <span>{i.label}</span>
+                <span class="pricing__price">{i.value}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <p style="color:var(--ink-soft);font-size:0.85rem;margin:14px 0 0">
+          {ORG.drinkBar.note}
+        </p>
+      </div>
+      <p style="text-align:center;margin-top:24px">
+        <a class="btn btn--ghost" href="/access">アクセス・営業時間を見る</a>
+      </p>
+    </div>
+  </section>
+
   {/* Instagram セクション：投稿埋め込み → 画像ギャラリー → フォロー導線 の優先順で表示 */}
   <section class="section section--tight">
     <div class="container">
@@ -162,6 +189,24 @@ const features = [
     font-weight: 700;
     color: var(--terracotta-deep);
     font-size: 0.9rem;
+  }
+
+  .pricing {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .pricing__row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .pricing__price {
+    color: var(--ink-soft);
+    font-weight: 600;
+    white-space: nowrap;
   }
 
   .gallery {

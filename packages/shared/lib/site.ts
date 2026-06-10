@@ -60,4 +60,13 @@ export const ORG = {
   adoptionInstagram: "https://www.instagram.com/",
   /** 運営団体名 */
   operator: "アネラカフェ",
+  /** ご利用案内（ドリンクバー形式）。料金・内容は確定後に差し替え。 */
+  drinkBar: {
+    lead: "アネラカフェはドリンクバー形式。お好きなドリンクを片手に、わんこたちとゆっくりお過ごしください。",
+    items: [
+      { label: "ドリンクバー（フリータイム）", value: "¥000（確定後に差し替え）" },
+      { label: "お子さま", value: "¥000（確定後に差し替え）" },
+    ],
+    note: "※ 料金・ご利用方法はイメージです。確定し次第更新します。最新情報は note・Instagram をご覧ください。",
+  },
 } as const;
