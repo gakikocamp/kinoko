@@ -37,6 +37,9 @@ export type StoreInfo = {
   heroImage?: string;
   /** トップ等で使うギャラリー画像（public/ からのパス）。空ならギャラリー非表示 */
   gallery?: { src: string; alt: string }[];
+  /** Instagram 投稿の埋め込み用パーマリンク（例: "https://www.instagram.com/p/XXXX/"）。
+   *  指定するとトップに公式埋め込み（無料）を表示。空なら「フォローはこちら」カードを表示。 */
+  instagramPosts?: string[];
   /** Googleマップ埋め込み用の iframe src（共有 > 地図を埋め込む で取得） */
   mapEmbedSrc?: string;
   /** Googleマップへのリンク（経路案内用） */

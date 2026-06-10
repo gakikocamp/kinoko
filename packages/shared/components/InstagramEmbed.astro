@@ -1,0 +1,52 @@
+---
+// Instagram 公式の無料埋め込み（embed.js）。
+// 投稿パーマリンクの配列を渡すと blockquote.instagram-media を並べ、
+// 1度だけ embed.js を読み込んで描画する。トークン不要・無料。
+interface Props {
+  posts: string[];
+}
+const { posts } = Astro.props;
+---
+
+<div class="ig-embed-grid">
+  {
+    posts.map((url) => (
+      <blockquote
+        class="instagram-media"
+        data-instgrm-permalink={url}
+        data-instgrm-version="14"
+      >
+        <a href={url} target="_blank" rel="noopener">
+          Instagramで見る
+        </a>
+      </blockquote>
+    ))
+  }
+</div>
+
+<!-- 公式埋め込みスクリプト（ページ内で1度だけ読み込む） -->
+<script async src="https://www.instagram.com/embed.js" is:inline></script>
+
+<style>
+  .ig-embed-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+  @media (min-width: 720px) {
+    .ig-embed-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 980px) {
+    .ig-embed-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .instagram-media {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+  }
+</style>
