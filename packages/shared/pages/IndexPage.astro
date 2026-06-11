@@ -41,7 +41,7 @@ const features = [
 
   <!-- コンセプト -->
   <section class="section">
-    <div class="container split">
+    <div class="container split reveal">
       <div>
         <span class="eyebrow">Concept</span>
         <h2 class="section-title" style="text-align:left">
@@ -64,9 +64,9 @@ const features = [
 
   {/* ご利用案内（ドリンクバー形式） */}
   <section class="section bg-deep">
-    <div class="container" style="max-width:760px">
+    <div class="container reveal" style="max-width:760px">
       <span class="eyebrow" style="display:block;text-align:center">Drink Bar</span>
-      <h2 class="section-title">ご利用案内</h2>
+      <h2 class="section-title section-title--accent">ご利用案内</h2>
       <p class="section-lead">{ORG.drinkBar.lead}</p>
       <div class="card" style="padding:24px">
         <ul class="pricing">
@@ -91,9 +91,9 @@ const features = [
 
   {/* Instagram セクション：投稿埋め込み → 画像ギャラリー → フォロー導線 の優先順で表示 */}
   <section class="section section--tight">
-    <div class="container">
+    <div class="container reveal">
       <span class="eyebrow" style="display:block;text-align:center">Instagram</span>
-      <h2 class="section-title">日々の様子</h2>
+      <h2 class="section-title section-title--accent">日々の様子</h2>
       <p class="section-lead">カフェやわんこの最新の様子は Instagram で発信中。</p>
 
       {
@@ -131,17 +131,18 @@ const features = [
 
   <!-- 取り組み -->
   <section class="section bg-deep">
-    <div class="container">
-      <h2 class="section-title">アネラカフェの3つの取り組み</h2>
+    <div class="container reveal">
+      <h2 class="section-title section-title--accent">アネラカフェの3つの取り組み</h2>
       <p class="section-lead">カフェを入り口に、できることを少しずつ。</p>
-      <div class="grid grid--3">
+      <div class="grid grid--3 reveal-stagger">
         {
           features.map((f) => (
             <a class="feature card" href={withBase(f.href)} style={`--accent:${f.accent}`}>
+              <span class="feature__glow" aria-hidden="true" />
               <div class="feature__body">
                 <h3 class="feature__title">{f.title}</h3>
                 <p class="feature__text">{f.text}</p>
-                <span class="feature__more">くわしく見る →</span>
+                <span class="feature__more">くわしく見る <span class="feature__arrow">→</span></span>
               </div>
             </a>
           ))
@@ -152,8 +153,8 @@ const features = [
 
   <!-- お知らせ -->
   <section class="section">
-    <div class="container" style="max-width:760px">
-      <h2 class="section-title">お知らせ</h2>
+    <div class="container reveal" style="max-width:760px">
+      <h2 class="section-title section-title--accent">お知らせ</h2>
       <p class="section-lead">最新情報は note で発信しています。</p>
       <NewsList items={news} emptyHint={true} />
       <p style="text-align:center; margin-top:24px">
@@ -165,17 +166,54 @@ const features = [
 
 <style>
   .feature {
+    position: relative;
     display: block;
     padding: 0;
-    border-top: 4px solid var(--accent, var(--brown));
+    overflow: hidden;
+  }
+  /* 上部のアクセントバー（ホバーで伸びる） */
+  .feature::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--accent, var(--brown));
+    transform: scaleX(0.18);
+    transform-origin: left;
+    transition: transform 0.4s var(--ease-out);
+    z-index: 2;
   }
   .feature:hover {
     text-decoration: none;
-    transform: translateY(-3px);
-    transition: transform 0.15s ease;
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+    border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  }
+  .feature:hover::before {
+    transform: scaleX(1);
+  }
+  /* アクセント色のぼかし光 */
+  .feature__glow {
+    position: absolute;
+    top: -40%;
+    right: -30%;
+    width: 70%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 35%, transparent), transparent 65%);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-out);
+    pointer-events: none;
+  }
+  .feature:hover .feature__glow {
+    opacity: 1;
   }
   .feature__body {
-    padding: 24px;
+    position: relative;
+    padding: 26px 24px;
+    z-index: 1;
   }
   .feature__title {
     margin: 0 0 8px;
@@ -183,13 +221,22 @@ const features = [
   }
   .feature__text {
     color: var(--ink-soft);
-    margin: 0 0 12px;
+    margin: 0 0 14px;
     font-size: 0.95rem;
   }
   .feature__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     font-weight: 700;
     color: var(--terracotta-deep);
     font-size: 0.9rem;
+  }
+  .feature__arrow {
+    transition: transform 0.3s var(--ease-out);
+  }
+  .feature:hover .feature__arrow {
+    transform: translateX(5px);
   }
 
   .pricing {
@@ -225,5 +272,12 @@ const features = [
     aspect-ratio: 1 / 1;
     object-fit: cover;
     border-radius: var(--radius);
+    transition:
+      transform 0.4s var(--ease-out),
+      box-shadow 0.4s var(--ease-out);
+  }
+  .gallery__img:hover {
+    transform: scale(1.04);
+    box-shadow: var(--shadow);
   }
 </style>

@@ -44,5 +44,38 @@ const canonical = new URL(path, store.url).toString();
       <slot />
     </main>
     <Footer store={store} />
+
+    <script>
+      // --- スクロール演出：ビューポートに入った要素に .is-in を付与 ---
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const targets = document.querySelectorAll(".reveal, .reveal-stagger");
+
+      if (reduceMotion || !("IntersectionObserver" in window)) {
+        targets.forEach((el) => el.classList.add("is-in"));
+      } else {
+        const io = new IntersectionObserver(
+          (entries, obs) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-in");
+                obs.unobserve(entry.target);
+              }
+            }
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
+        );
+        targets.forEach((el) => io.observe(el));
+      }
+
+      // --- ヘッダー：スクロール量に応じて状態クラスを切り替え ---
+      const header = document.querySelector(".site-header");
+      if (header) {
+        const onScroll = () => {
+          header.classList.toggle("is-scrolled", window.scrollY > 24);
+        };
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+      }
+    </script>
   </body>
 </html>
