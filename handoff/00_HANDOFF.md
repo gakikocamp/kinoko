@@ -12,6 +12,8 @@
 | `03_PLACEHOLDERS.md` | 公開前に差し替える項目チェックリスト |
 | `build/ohori-dist.zip` | 大濠店の**ビルド済み完成データ**（Cloudflare 直アップロード用） |
 | `build/harada-dist.zip` | 原田店の**ビルド済み完成データ**（同上） |
+| `build/ohori-local-preview.zip` | 大濠店の**ローカル閲覧用**。解凍して `index.html` をダブルクリックするだけで表示できる（リンクを相対パス化済み。**公開用には使わない**） |
+| `build/harada-local-preview.zip` | 原田店のローカル閲覧用（同上） |
 
 > リポジトリ直下の `README.md`（全体説明）と `packages/shared/BRAND.md`（ブランドガイド）も合わせて参照してください。
 > AIエディタ向けの要点は、リポジトリ直下の `AGENTS.md` にまとめています。
