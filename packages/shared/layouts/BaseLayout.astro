@@ -28,6 +28,14 @@ const canonical = new URL(path, store.url).toString();
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={desc} />
+
+    <!-- 編集的タイポグラフィ用の Web フォント -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="canonical" href={canonical} />
 
     <!-- OGP -->
@@ -39,16 +47,26 @@ const canonical = new URL(path, store.url).toString();
     <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
+    {
+      path === "/" && (
+        <div class="intro-curtain" aria-hidden="true">
+          <span class="intro-curtain__mark">Anela</span>
+        </div>
+      )
+    }
+
     <Header store={store} path={path} />
     <main>
       <slot />
     </main>
     <Footer store={store} />
 
+    <div class="grain" aria-hidden="true"></div>
+
     <script>
       // --- スクロール演出：ビューポートに入った要素に .is-in を付与 ---
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const targets = document.querySelectorAll(".reveal, .reveal-stagger");
+      const targets = document.querySelectorAll(".reveal, .reveal-stagger, .reveal-line");
 
       if (reduceMotion || !("IntersectionObserver" in window)) {
         targets.forEach((el) => el.classList.add("is-in"));
@@ -75,6 +93,29 @@ const canonical = new URL(path, store.url).toString();
         };
         onScroll();
         window.addEventListener("scroll", onScroll, { passive: true });
+      }
+
+      // --- ヒーロー画像の軽いパララックス ---
+      const parallax = document.querySelectorAll("[data-parallax]");
+      if (parallax.length && !reduceMotion) {
+        let ticking = false;
+        const update = () => {
+          const y = window.scrollY;
+          parallax.forEach((el) => {
+            (el as HTMLElement).style.transform = `translateY(${y * -0.06}px)`;
+          });
+          ticking = false;
+        };
+        window.addEventListener(
+          "scroll",
+          () => {
+            if (!ticking) {
+              ticking = true;
+              requestAnimationFrame(update);
+            }
+          },
+          { passive: true }
+        );
       }
     </script>
   </body>

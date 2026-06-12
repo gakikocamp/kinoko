@@ -9,40 +9,43 @@ const { store } = Astro.props;
 ---
 
 <section class="hero">
-  <!-- 動く光の背景 -->
+  <!-- 動く光の背景（控えめに） -->
   <div class="hero__aurora" aria-hidden="true">
     <span class="blob blob--teal"></span>
     <span class="blob blob--gold"></span>
-    <span class="blob blob--coral"></span>
-  </div>
-  <!-- 漂う輝き（天使の光） -->
-  <div class="hero__sparkles" aria-hidden="true">
-    <span style="--x:12%; --y:24%; --d:0s; --s:1"></span>
-    <span style="--x:78%; --y:18%; --d:1.1s; --s:0.7"></span>
-    <span style="--x:64%; --y:62%; --d:2s; --s:1.2"></span>
-    <span style="--x:30%; --y:74%; --d:0.6s; --s:0.8"></span>
-    <span style="--x:88%; --y:48%; --d:1.6s; --s:0.9"></span>
   </div>
 
-  <div class="container hero__inner">
+  <!-- 縦組みのサイドラベル -->
+  <span class="hero__side en" aria-hidden="true">Fukuoka — Est.</span>
+
+  <div class="container container--wide hero__grid">
     <div class="hero__copy">
-      <span class="eyebrow hero__eyebrow">Anela Cafe Fukuoka ・ {store.shortName}</span>
+      <p class="hero__kicker en">Anela Cafe Fukuoka — {store.shortName}</p>
+
       <h1 class="hero__title">
-        <span class="text-gradient">{store.tagline}</span>
+        <span class="reveal-line" style="--reveal-delay:0.05s"
+          ><span>{store.tagline}</span></span
+        >
       </h1>
+
+      <p class="hero__sub en">Coffee, rescue dogs, and gentle time.</p>
+
       <p class="hero__lead">
         コーヒーと、保護犬と、やさしい時間。<br />
         アネラカフェ{store.shortName}へようこそ。
       </p>
+
       <div class="hero__actions">
         <a class="btn btn--primary" href={withBase("/access")}>アクセス・営業時間</a>
-        <a class="btn btn--ghost" href={store.instagram} target="_blank" rel="noopener">
-          Instagramを見る
+        <a class="arrow-link" href={store.instagram} target="_blank" rel="noopener">
+          <span class="arrow-link__line"></span>Instagram を見る
         </a>
       </div>
     </div>
-    <div class="hero__media">
+
+    <div class="hero__media" data-parallax>
       <span class="hero__halo" aria-hidden="true"></span>
+      <span class="hero__frame" aria-hidden="true"></span>
       {
         store.heroImage ? (
           <img
@@ -50,25 +53,21 @@ const { store } = Astro.props;
             src={store.heroImage}
             alt={`アネラカフェ${store.shortName}の店内・わんこの様子`}
             width="640"
-            height="640"
+            height="800"
           />
         ) : (
-          <div class="ph ph--square hero__ph" role="img" aria-label="店内・保護犬の写真（準備中）">
+          <div class="ph hero__ph" role="img" aria-label="店内・保護犬の写真（準備中）">
             店内・わんこの写真
           </div>
         )
       }
+      <span class="hero__caption en">No. 01 — Ohori &amp; Harada</span>
     </div>
   </div>
 
-  <!-- 下端の波 -->
-  <div class="wave-divider hero__wave" aria-hidden="true">
-    <svg viewBox="0 0 1440 60" preserveAspectRatio="none">
-      <path
-        d="M0,32 C240,72 480,8 720,28 C960,48 1200,72 1440,36 L1440,60 L0,60 Z"
-        fill="var(--cream)"></path>
-    </svg>
-  </div>
+  <a class="hero__scroll en" href="#main-start" aria-label="下へスクロール">
+    Scroll<span class="hero__scroll-line" aria-hidden="true"></span>
+  </a>
 </section>
 
 <style>
@@ -76,180 +75,230 @@ const { store } = Astro.props;
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    padding-block: clamp(56px, 8vw, 96px) 0;
-    background:
-      radial-gradient(
-        90% 120% at 85% 0%,
-        color-mix(in srgb, var(--brown) 18%, var(--cream)) 0%,
-        var(--cream) 55%
-      );
+    min-height: min(92vh, 880px);
+    display: flex;
+    align-items: center;
+    padding-block: clamp(72px, 12vh, 140px);
   }
 
-  /* ---- 動く光のブロブ ---- */
+  /* ---- 動く光 ---- */
   .hero__aurora {
     position: absolute;
     inset: -20% -10% 0;
     z-index: -2;
-    filter: blur(60px);
-    opacity: 0.7;
+    filter: blur(70px);
+    opacity: 0.55;
   }
   .blob {
     position: absolute;
     width: 46vw;
-    max-width: 560px;
+    max-width: 600px;
     aspect-ratio: 1;
     border-radius: 50%;
     mix-blend-mode: multiply;
   }
   .blob--teal {
-    top: -8%;
-    right: -4%;
-    background: radial-gradient(circle at 30% 30%, var(--brown), transparent 65%);
-    animation: drift1 18s ease-in-out infinite;
+    top: -10%;
+    right: -6%;
+    background: radial-gradient(circle at 30% 30%, var(--brown), transparent 64%);
+    animation: drift1 22s ease-in-out infinite;
   }
   .blob--gold {
-    top: 18%;
-    left: -6%;
-    background: radial-gradient(circle at 30% 30%, var(--gold), transparent 65%);
-    animation: drift2 22s ease-in-out infinite;
-  }
-  .blob--coral {
-    bottom: -16%;
-    right: 22%;
-    width: 34vw;
-    background: radial-gradient(circle at 30% 30%, var(--terracotta), transparent 65%);
-    animation: drift3 26s ease-in-out infinite;
+    bottom: -12%;
+    left: -8%;
+    background: radial-gradient(circle at 30% 30%, var(--gold), transparent 64%);
+    animation: drift2 26s ease-in-out infinite;
   }
   @keyframes drift1 {
     0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(-6%, 8%) scale(1.12); }
+    50% { transform: translate(-5%, 7%) scale(1.1); }
   }
   @keyframes drift2 {
     0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(8%, -6%) scale(1.08); }
-  }
-  @keyframes drift3 {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(-10%, -4%) scale(1.15); }
+    50% { transform: translate(7%, -5%) scale(1.08); }
   }
 
-  /* ---- 漂う輝き ---- */
-  .hero__sparkles {
+  /* ---- 縦サイドラベル ---- */
+  .hero__side {
     position: absolute;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
+    left: clamp(14px, 2vw, 30px);
+    top: 50%;
+    transform: translateY(-50%);
+    writing-mode: vertical-rl;
+    font-style: italic;
+    letter-spacing: 0.28em;
+    font-size: 0.78rem;
+    color: color-mix(in srgb, var(--brown-deep) 60%, transparent);
+    z-index: 1;
   }
-  .hero__sparkles span {
-    position: absolute;
-    left: var(--x);
-    top: var(--y);
-    width: calc(7px * var(--s));
-    height: calc(7px * var(--s));
-    background: radial-gradient(circle, var(--white), color-mix(in srgb, var(--gold) 70%, transparent));
-    border-radius: 50%;
-    box-shadow: 0 0 10px 2px color-mix(in srgb, var(--gold) 60%, transparent);
-    animation: sparkle 4s var(--ease-out) infinite;
-    animation-delay: var(--d);
-  }
-  @keyframes sparkle {
-    0%, 100% { opacity: 0; transform: scale(0.4) translateY(0); }
-    40% { opacity: 1; transform: scale(1) translateY(-6px); }
-    70% { opacity: 0.5; transform: scale(0.8) translateY(-10px); }
+  @media (max-width: 980px) {
+    .hero__side { display: none; }
   }
 
-  .hero__inner {
+  /* ---- グリッド ---- */
+  .hero__grid {
     position: relative;
     display: grid;
-    gap: 32px;
+    gap: clamp(32px, 5vw, 72px);
     align-items: center;
-    padding-bottom: clamp(40px, 7vw, 80px);
+    width: 100%;
   }
-  @media (min-width: 860px) {
-    .hero__inner {
-      grid-template-columns: 1.08fr 0.92fr;
+  @media (min-width: 920px) {
+    .hero__grid {
+      grid-template-columns: 1.06fr 0.94fr;
     }
   }
 
-  /* ---- 登場アニメーション ---- */
-  .hero__eyebrow,
-  .hero__title,
-  .hero__lead,
-  .hero__actions {
+  .hero__kicker {
+    font-style: italic;
+    font-size: 0.9rem;
+    letter-spacing: 0.14em;
+    color: var(--gold-deep);
+    margin: 0 0 22px;
     opacity: 0;
-    transform: translateY(20px);
-    animation: hero-in 0.8s var(--ease-out) forwards;
+    animation: fade-up 0.8s var(--ease-out) 0.15s forwards;
   }
-  .hero__eyebrow { animation-delay: 0.05s; }
-  .hero__title { animation-delay: 0.18s; }
-  .hero__lead { animation-delay: 0.32s; }
-  .hero__actions { animation-delay: 0.46s; }
-  @keyframes hero-in {
-    to { opacity: 1; transform: none; }
-  }
-
   .hero__title {
-    font-size: clamp(2rem, 1.2rem + 3.2vw, 3.2rem);
-    line-height: 1.25;
-    margin: 16px 0 18px;
+    font-size: clamp(2.3rem, 1.3rem + 4.6vw, 4.4rem);
+    line-height: 1.22;
+    letter-spacing: 0.03em;
+    margin: 0;
+    color: var(--brown-deep);
+    font-weight: 600;
+  }
+  .hero__sub {
+    font-style: italic;
+    font-size: clamp(1.05rem, 0.9rem + 0.8vw, 1.5rem);
+    color: var(--terracotta-deep);
+    margin: 20px 0 0;
+    opacity: 0;
+    animation: fade-up 0.8s var(--ease-out) 0.5s forwards;
   }
   .hero__lead {
     color: var(--ink-soft);
-    font-size: 1.08rem;
-    margin: 0 0 30px;
+    font-size: 1.05rem;
+    margin: 26px 0 34px;
+    opacity: 0;
+    animation: fade-up 0.8s var(--ease-out) 0.65s forwards;
   }
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    align-items: center;
+    gap: 16px 28px;
+    opacity: 0;
+    animation: fade-up 0.8s var(--ease-out) 0.8s forwards;
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: none; }
   }
 
-  /* ---- メディア（画像＋光輪） ---- */
+  /* ---- メディア ---- */
   .hero__media {
     position: relative;
     opacity: 0;
-    transform: translateY(24px) scale(0.96);
-    animation: hero-media-in 1s var(--ease-out) 0.3s forwards;
+    animation: fade-in 1.1s var(--ease-out) 0.4s forwards;
+    will-change: transform;
   }
-  @keyframes hero-media-in {
-    to { opacity: 1; transform: none; }
+  @keyframes fade-in {
+    to { opacity: 1; }
   }
   .hero__halo {
     position: absolute;
-    inset: -8% -8% auto -8%;
-    aspect-ratio: 1;
+    inset: -10%;
     z-index: -1;
     border-radius: 50%;
     background: radial-gradient(
       circle,
-      color-mix(in srgb, var(--gold) 55%, transparent),
-      transparent 62%
+      color-mix(in srgb, var(--gold) 50%, transparent),
+      transparent 60%
     );
-    filter: blur(22px);
-    animation: float-soft 6s ease-in-out infinite;
+    filter: blur(26px);
+    animation: float-soft 7s ease-in-out infinite;
+  }
+  /* オフセットした罫線フレーム（編集的） */
+  .hero__frame {
+    position: absolute;
+    inset: 16px -16px -16px 16px;
+    border: 1px solid color-mix(in srgb, var(--brown) 45%, transparent);
+    border-radius: var(--radius-lg);
+    z-index: -1;
   }
   .hero__img,
   .hero__ph {
-    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    transition: transform 0.5s var(--ease-out);
+    transition: transform 0.6s var(--ease-out);
+  }
+  .hero__ph {
+    display: grid;
+    place-content: center;
   }
   .hero__media:hover .hero__img {
-    transform: translateY(-6px) rotate(-0.6deg);
+    transform: scale(1.015) rotate(-0.4deg);
+  }
+  .hero__caption {
+    position: absolute;
+    bottom: 18px;
+    left: 18px;
+    font-style: italic;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    color: var(--white);
+    background: color-mix(in srgb, var(--brown-deep) 78%, transparent);
+    backdrop-filter: blur(4px);
+    padding: 6px 14px;
+    border-radius: 999px;
   }
 
-  .hero__wave {
+  /* ---- スクロールキュー ---- */
+  .hero__scroll {
+    position: absolute;
+    bottom: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    font-style: italic;
+    font-size: 0.8rem;
+    letter-spacing: 0.16em;
+    color: var(--ink-soft);
+  }
+  .hero__scroll:hover { text-decoration: none; }
+  .hero__scroll-line {
+    width: 1px;
+    height: 46px;
+    background: linear-gradient(var(--brown), transparent);
     position: relative;
-    margin-top: -1px;
+    overflow: hidden;
+  }
+  .hero__scroll-line::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    background: var(--terracotta);
+    animation: scroll-cue 1.8s var(--ease-out) infinite;
+  }
+  @keyframes scroll-cue {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(260%); }
+  }
+  @media (max-width: 920px) {
+    .hero__scroll { display: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .hero__eyebrow,
-    .hero__title,
+    .hero__kicker,
+    .hero__sub,
     .hero__lead,
     .hero__actions,
     .hero__media {
