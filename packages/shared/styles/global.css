@@ -439,16 +439,30 @@ h3 {
 
 /* prose (markdown content) */
 .prose {
-  max-width: 720px;
+  max-width: 680px;
   margin-inline: auto;
+  font-size: 1.04rem;
+}
+/* 最初の段落をリードとして大きめに */
+.prose > p:first-of-type {
+  font-size: 1.12rem;
+  color: var(--ink);
 }
 .prose h2 {
-  font-size: 1.3rem;
-  margin-top: 2em;
+  font-size: 1.4rem;
+  margin-top: 2.2em;
+  padding-top: 0.6em;
+  border-top: 1px solid var(--line);
+}
+.prose h2::before {
+  content: "✦";
+  color: var(--gold);
+  margin-right: 0.5em;
+  font-size: 0.8em;
 }
 .prose h3 {
-  font-size: 1.1rem;
-  margin-top: 1.6em;
+  font-size: 1.15rem;
+  margin-top: 1.8em;
 }
 .prose ul,
 .prose ol {

@@ -1,6 +1,7 @@
 ---
 import type { StoreInfo } from "../lib/site";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHeader from "../components/PageHeader.astro";
 
 interface Props {
   store: StoreInfo;
@@ -9,13 +10,11 @@ const { store } = Astro.props;
 ---
 
 <BaseLayout store={store} path="/access" title="アクセス・営業時間">
+  <PageHeader kicker="Access" title="アクセス・営業時間" />
   <section class="section">
     <div class="container">
-      <span class="eyebrow" style="display:block;text-align:center">Access</span>
-      <h1 class="section-title">アクセス・営業時間</h1>
-
-      <div class="split" style="margin-top:32px">
-        <div class="card" style="padding:24px">
+      <div class="split">
+        <div class="card" style="padding:28px">
           <h2 style="margin-top:0;font-size:1.15rem">店舗情報</h2>
           <p><strong>{store.name}</strong></p>
           <p>{store.address}</p>
@@ -38,7 +37,7 @@ const { store } = Astro.props;
           </p>
         </div>
 
-        <div class="card" style="padding:24px">
+        <div class="card" style="padding:28px">
           <h2 style="margin-top:0;font-size:1.15rem">営業時間</h2>
           <table class="hours">
             <tbody>

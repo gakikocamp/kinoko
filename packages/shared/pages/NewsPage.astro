@@ -4,6 +4,7 @@ import { ORG } from "../lib/site";
 import { fetchNoteNews } from "../lib/note-rss";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import NewsList from "../components/NewsList.astro";
+import PageHeader from "../components/PageHeader.astro";
 
 interface Props {
   store: StoreInfo;
@@ -14,15 +15,13 @@ const noteUrl = ORG.noteAccount ? `https://note.com/${ORG.noteAccount}` : null;
 ---
 
 <BaseLayout store={store} path="/news" title="お知らせ">
+  <PageHeader
+    kicker="News"
+    title="お知らせ"
+    lead="日々の様子やイベント情報は note で発信しています。最新の記事を自動で表示しています。"
+  />
   <section class="section">
     <div class="container" style="max-width:760px">
-      <span class="eyebrow" style="display:block;text-align:center">News</span>
-      <h1 class="section-title">お知らせ</h1>
-      <p class="section-lead">
-        日々の様子やイベント情報は note で発信しています。<br />
-        最新の記事を自動で表示しています。
-      </p>
-
       <NewsList items={news} emptyHint={true} />
 
       {

@@ -2,6 +2,7 @@
 import type { StoreInfo } from "../lib/site";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ContactMethods from "../components/ContactMethods.astro";
+import PageHeader from "../components/PageHeader.astro";
 import { Content as RecruitContent } from "../content/recruit.md";
 
 interface Props {
@@ -11,11 +12,13 @@ const { store } = Astro.props;
 ---
 
 <BaseLayout store={store} path="/recruit" title="スタッフ募集">
+  <PageHeader
+    kicker="Recruit"
+    title="スタッフ募集"
+    lead="カフェと福祉、両方を大切にする仲間を募集しています。"
+  />
   <section class="section">
     <div class="container">
-      <span class="eyebrow" style="display:block;text-align:center">Recruit</span>
-      <h1 class="section-title">スタッフ募集</h1>
-
       <article class="prose">
         <RecruitContent />
       </article>
