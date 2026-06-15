@@ -1,6 +1,7 @@
 # AGENTS.md — アネラカフェ福岡サイト
 
-AIエディタ／エージェント向けのプロジェクト要点です。まず `handoff/00_HANDOFF.md` を読んでください。
+AIエディタ／エージェント向けのプロジェクト要点です。引き継ぎはまず `handoff/04_ANTIGRAVITY.md`（手順＋キックオフ指示）、
+次に `handoff/00_HANDOFF.md` を読んでください。
 
 ## これは何か
 アネラカフェ福岡 **大濠店・原田店** の公式サイト。1リポジトリで2サイトを生成する
@@ -42,3 +43,7 @@ Cloudflare Pages に**店舗ごと1プロジェクト**。手順は `handoff/02_
 ## デザイン
 ブランドガイドは `packages/shared/BRAND.md`。色は `packages/shared/styles/global.css` の
 `:root` 変数で一元管理（Teal=主色／Gold=差し色／Coral=CTA／Ivory=背景）。
+- 書体: 和文見出し＝Shippori Mincho／本文＝Zen Kaku Gothic New／欧文＝Fraunces(italic)。Google Fonts を `BaseLayout` で読込、`--font-*` で管理。
+- 共通の作法: 編集的見出し `.s-head`（`.counts` 内で連番）、下層先頭は `<PageHeader>`、スクロール演出は `.reveal*`（`BaseLayout` の IO が `.is-in` 付与）、装飾は `.grain`／`.intro-curtain`／`.marquee`。
+- モーションは必ず `prefers-reduced-motion: reduce` を尊重する（既存の指定を壊さない）。
+- 設計の全体像は `handoff/04_ANTIGRAVITY.md` の「4. いまの状態」。
