@@ -1,0 +1,371 @@
+---
+import type { StoreInfo } from "../lib/site";
+import { ORG } from "../lib/site";
+import { fetchNoteNews } from "../lib/note-rss";
+import { withBase } from "../lib/url";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/Hero.astro";
+import NewsList from "../components/NewsList.astro";
+import InstagramEmbed from "../components/InstagramEmbed.astro";
+
+interface Props {
+  store: StoreInfo;
+}
+const { store } = Astro.props;
+const news = await fetchNoteNews(ORG.noteAccount, 3);
+
+const features = [
+  {
+    href: "/adoption",
+    title: "里親募集",
+    text: "新しい家族を待つ保護犬たち。最新の子はInstagramで発信しています。",
+    accent: "var(--green)",
+  },
+  {
+    href: "/welfare",
+    title: "就労支援（B型）",
+    text: "自分のペースで働ける場所。見学・ご相談はいつでも歓迎です。",
+    accent: "var(--brown)",
+  },
+  {
+    href: "/recruit",
+    title: "スタッフ募集",
+    text: "カフェと福祉、両方を大切にする仲間を募集しています。",
+    accent: "var(--gold)",
+  },
+];
+---
+
+<BaseLayout store={store} path="/">
+  <Hero store={store} />
+
+  <!-- 流れる帯 -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      {
+        Array.from({ length: 2 }).map(() => (
+          <div class="marquee__item">
+            Coffee <span>✦</span> Rescue Dogs <span>✦</span> Welfare{" "}
+            <span>✦</span> A Gentle Place <span>✦</span>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <span id="main-start"></span>
+
+  <div class="counts">
+    <!-- コンセプト -->
+    <section class="section">
+      <div class="container editorial reveal">
+        <header class="s-head">
+          <span class="s-head__kicker en">Concept</span>
+          <h2 class="s-head__title">
+            コーヒーと、保護犬と、<br />まちのやさしい居場所。
+          </h2>
+        </header>
+        <div class="editorial__body">
+          <div class="editorial__text">
+            <p>
+              アネラカフェ{store.shortName}は、おいしいコーヒーを楽しめるカフェであると同時に、
+              保護犬の里親探しや、就労継続支援B型の場としても地域に開かれたお店です。
+            </p>
+            <p>
+              ふらっと立ち寄って、ゆっくり過ごす。そんな何気ない時間が、
+              人にも動物にもやさしい循環につながればと願っています。
+            </p>
+          </div>
+          <figure class="editorial__media">
+            <span class="editorial__frame" aria-hidden="true"></span>
+            <div class="ph" role="img" aria-label="カフェの雰囲気（写真準備中）">
+              カフェの雰囲気の写真
+            </div>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    {/* ご利用案内（ドリンクバー形式） */}
+    <section class="section bg-deep">
+      <div class="container reveal" style="max-width:760px">
+        <header class="s-head s-head--center">
+          <span class="s-head__kicker en">Drink Bar</span>
+          <h2 class="s-head__title">ご利用案内</h2>
+          <p class="s-head__lead">{ORG.drinkBar.lead}</p>
+        </header>
+        <div class="card" style="padding:28px">
+          <ul class="pricing">
+            {
+              ORG.drinkBar.items.map((i) => (
+                <li class="pricing__row">
+                  <span>{i.label}</span>
+                  <span class="pricing__price">{i.value}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <p style="color:var(--ink-soft);font-size:0.85rem;margin:14px 0 0">
+            {ORG.drinkBar.note}
+          </p>
+        </div>
+        <p style="text-align:center;margin-top:28px">
+          <a class="btn btn--ghost" href={withBase("/access")}>アクセス・営業時間を見る</a>
+        </p>
+      </div>
+    </section>
+
+    {/* Instagram セクション：投稿埋め込み → 画像ギャラリー → フォロー導線 の優先順で表示 */}
+    <section class="section section--tight">
+      <div class="container reveal">
+        <header class="s-head s-head--center">
+          <span class="s-head__kicker en">Daily</span>
+          <h2 class="s-head__title">日々の様子</h2>
+          <p class="s-head__lead">カフェやわんこの最新の様子は Instagram で発信中。</p>
+        </header>
+
+        {
+          store.instagramPosts && store.instagramPosts.length > 0 ? (
+            <InstagramEmbed posts={store.instagramPosts} />
+          ) : store.gallery && store.gallery.length > 0 ? (
+            <div class="gallery">
+              {store.gallery.map((g) => (
+                <img class="gallery__img" src={g.src} alt={g.alt} loading="lazy" />
+              ))}
+            </div>
+          ) : (
+            <div class="card" style="padding:32px;text-align:center;max-width:560px;margin-inline:auto">
+              <p style="margin-top:0">
+                写真は Instagram で随時更新しています。フォローして最新の様子をチェック！
+              </p>
+              <a class="btn btn--primary" href={store.instagram} target="_blank" rel="noopener">
+                Instagramを見る
+              </a>
+            </div>
+          )
+        }
+
+        {
+          Boolean(store.instagramPosts?.length || store.gallery?.length) && (
+            <p style="text-align:center; margin-top:28px">
+              <a class="arrow-link" href={store.instagram} target="_blank" rel="noopener">
+                <span class="arrow-link__line" />
+                もっと見る（Instagram）
+              </a>
+            </p>
+          )
+        }
+      </div>
+    </section>
+
+    <!-- 取り組み -->
+    <section class="section bg-deep">
+      <div class="container reveal">
+        <header class="s-head s-head--center">
+          <span class="s-head__kicker en">What We Do</span>
+          <h2 class="s-head__title">3つの取り組み</h2>
+          <p class="s-head__lead">カフェを入り口に、できることを少しずつ。</p>
+        </header>
+        <div class="grid grid--3 reveal-stagger">
+          {
+            features.map((f, idx) => (
+              <a class="feature card" href={withBase(f.href)} style={`--accent:${f.accent}`}>
+                <span class="feature__glow" aria-hidden="true" />
+                <div class="feature__body">
+                  <span class="feature__num en">{String(idx + 1).padStart(2, "0")}</span>
+                  <h3 class="feature__title">{f.title}</h3>
+                  <p class="feature__text">{f.text}</p>
+                  <span class="feature__more">
+                    くわしく見る <span class="feature__arrow">→</span>
+                  </span>
+                </div>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- お知らせ -->
+    <section class="section">
+      <div class="container reveal" style="max-width:760px">
+        <header class="s-head s-head--center">
+          <span class="s-head__kicker en">News</span>
+          <h2 class="s-head__title">お知らせ</h2>
+          <p class="s-head__lead">最新情報は note で発信しています。</p>
+        </header>
+        <NewsList items={news} emptyHint={true} />
+        <p style="text-align:center; margin-top:28px">
+          <a class="arrow-link" href={withBase("/news")}>
+            <span class="arrow-link__line"></span>お知らせ一覧へ
+          </a>
+        </p>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  /* ---- 編集的スプリット（コンセプト） ---- */
+  .editorial__body {
+    display: grid;
+    gap: clamp(28px, 5vw, 64px);
+    align-items: center;
+  }
+  @media (min-width: 860px) {
+    .editorial__body {
+      grid-template-columns: 1fr 1fr;
+    }
+    /* 見出しは左カラム幅に寄せて編集的に */
+    .editorial .s-head {
+      max-width: 60%;
+    }
+  }
+  .editorial__text p {
+    margin: 0 0 1.2em;
+    font-size: 1.04rem;
+  }
+  .editorial__media {
+    position: relative;
+    margin: 0;
+  }
+  .editorial__frame {
+    position: absolute;
+    inset: 18px -18px -18px 18px;
+    border: 1px solid color-mix(in srgb, var(--brown) 40%, transparent);
+    border-radius: var(--radius-lg);
+    z-index: 0;
+  }
+  .editorial__media .ph {
+    position: relative;
+    z-index: 1;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+  }
+
+  .feature {
+    position: relative;
+    display: block;
+    padding: 0;
+    overflow: hidden;
+  }
+  .feature__num {
+    display: block;
+    font-family: var(--font-en);
+    font-style: italic;
+    font-size: 1.5rem;
+    color: color-mix(in srgb, var(--accent) 80%, var(--ink-soft));
+    margin-bottom: 10px;
+    opacity: 0.85;
+  }
+  /* 上部のアクセントバー（ホバーで伸びる） */
+  .feature::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--accent, var(--brown));
+    transform: scaleX(0.18);
+    transform-origin: left;
+    transition: transform 0.4s var(--ease-out);
+    z-index: 2;
+  }
+  .feature:hover {
+    text-decoration: none;
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+    border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  }
+  .feature:hover::before {
+    transform: scaleX(1);
+  }
+  /* アクセント色のぼかし光 */
+  .feature__glow {
+    position: absolute;
+    top: -40%;
+    right: -30%;
+    width: 70%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 35%, transparent), transparent 65%);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-out);
+    pointer-events: none;
+  }
+  .feature:hover .feature__glow {
+    opacity: 1;
+  }
+  .feature__body {
+    position: relative;
+    padding: 26px 24px;
+    z-index: 1;
+  }
+  .feature__title {
+    margin: 0 0 8px;
+    font-size: 1.2rem;
+  }
+  .feature__text {
+    color: var(--ink-soft);
+    margin: 0 0 14px;
+    font-size: 0.95rem;
+  }
+  .feature__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    color: var(--terracotta-deep);
+    font-size: 0.9rem;
+  }
+  .feature__arrow {
+    transition: transform 0.3s var(--ease-out);
+  }
+  .feature:hover .feature__arrow {
+    transform: translateX(5px);
+  }
+
+  .pricing {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .pricing__row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .pricing__price {
+    color: var(--ink-soft);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  @media (min-width: 640px) {
+    .gallery {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .gallery__img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: var(--radius);
+    transition:
+      transform 0.4s var(--ease-out),
+      box-shadow 0.4s var(--ease-out);
+  }
+  .gallery__img:hover {
+    transform: scale(1.04);
+    box-shadow: var(--shadow);
+  }
+</style>

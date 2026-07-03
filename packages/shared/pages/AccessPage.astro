@@ -1,0 +1,88 @@
+---
+import type { StoreInfo } from "../lib/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHeader from "../components/PageHeader.astro";
+
+interface Props {
+  store: StoreInfo;
+}
+const { store } = Astro.props;
+---
+
+<BaseLayout store={store} path="/access" title="アクセス・営業時間">
+  <PageHeader kicker="Access" title="アクセス・営業時間" />
+  <section class="section">
+    <div class="container">
+      <div class="split">
+        <div class="card" style="padding:28px">
+          <h2 style="margin-top:0;font-size:1.15rem">店舗情報</h2>
+          <p><strong>{store.name}</strong></p>
+          <p>{store.address}</p>
+          <p>{store.access}</p>
+          <p>
+            TEL: <a href={`tel:${store.tel}`}>{store.tel}</a><br />
+            Mail: <a href={`mailto:${store.email}`}>{store.email}</a>
+          </p>
+          <p style="margin-top:16px">
+            <a class="btn btn--ghost" href={store.instagram} target="_blank" rel="noopener">
+              Instagram
+            </a>
+            {
+              store.mapLink && (
+                <a class="btn btn--ghost" href={store.mapLink} target="_blank" rel="noopener">
+                  Googleマップで開く
+                </a>
+              )
+            }
+          </p>
+        </div>
+
+        <div class="card" style="padding:28px">
+          <h2 style="margin-top:0;font-size:1.15rem">営業時間</h2>
+          <table class="hours">
+            <tbody>
+              {
+                store.hours.map((h) => (
+                  <tr>
+                    <th scope="row">{h.label}</th>
+                    <td>{h.value}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+          {store.closedNote && <p style="margin-top:14px;color:var(--ink-soft)">{store.closedNote}</p>}
+        </div>
+      </div>
+
+      <!-- 地図 -->
+      <div style="margin-top:32px">
+        {
+          store.mapEmbedSrc ? (
+            <iframe
+              class="map"
+              src={store.mapEmbedSrc}
+              title={`${store.name}の地図`}
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen
+            />
+          ) : (
+            <div class="ph ph--wide" role="img" aria-label="地図（準備中）">
+              Googleマップを埋め込み予定
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .map {
+    width: 100%;
+    height: 420px;
+    border: 0;
+    border-radius: var(--radius);
+  }
+</style>

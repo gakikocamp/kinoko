@@ -1,0 +1,126 @@
+---
+import type { StoreInfo } from "../lib/site";
+import { ORG } from "../lib/site";
+import { withBase } from "../lib/url";
+
+interface Props {
+  store: StoreInfo;
+}
+const { store } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="site-footer__wordmark en">Anela</p>
+    <p class="site-footer__tagline">コーヒーと、保護犬と、やさしい時間。</p>
+  </div>
+
+  <div class="container site-footer__grid">
+    <div>
+      <p class="site-footer__brand">アネラカフェ {store.shortName}</p>
+      <p class="site-footer__addr">{store.address}</p>
+      <p class="site-footer__addr">TEL: <a href={`tel:${store.tel}`}>{store.tel}</a></p>
+    </div>
+
+    <nav class="site-footer__nav" aria-label="フッターナビゲーション">
+      <a href={withBase("/access")}>アクセス</a>
+      <a href={withBase("/news")}>お知らせ</a>
+      <a href={withBase("/adoption")}>里親募集</a>
+      <a href={withBase("/welfare")}>就労支援</a>
+      <a href={withBase("/recruit")}>スタッフ募集</a>
+      <a href={withBase("/contact")}>お問い合わせ</a>
+    </nav>
+
+    <div class="site-footer__links">
+      <a href={store.instagram} target="_blank" rel="noopener">Instagram（{store.shortName}）</a>
+      <a href={store.sister.url}>姉妹店：{store.sister.name}</a>
+    </div>
+  </div>
+
+  <p class="site-footer__copy">© {year} {ORG.operator}</p>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative;
+    background:
+      radial-gradient(
+        80% 120% at 100% 0%,
+        color-mix(in srgb, var(--brown) 70%, var(--brown-deep)),
+        var(--brown-deep) 60%
+      );
+    color: var(--cream);
+    padding-block: clamp(56px, 8vw, 88px) 28px;
+    margin-top: clamp(72px, 9vw, 120px);
+    overflow: hidden;
+  }
+  .site-footer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--terracotta), var(--gold));
+  }
+  .site-footer a {
+    color: var(--cream);
+  }
+  .site-footer a:hover {
+    color: var(--white);
+  }
+
+  .site-footer__wordmark {
+    font-style: italic;
+    font-size: clamp(2.6rem, 1.6rem + 5vw, 5rem);
+    line-height: 1;
+    color: color-mix(in srgb, var(--cream) 96%, transparent);
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+  .site-footer__tagline {
+    font-family: var(--font-display);
+    color: var(--gold);
+    margin: 10px 0 0;
+    letter-spacing: 0.08em;
+    font-size: 0.98rem;
+  }
+
+  .site-footer__grid {
+    display: grid;
+    gap: 28px;
+    margin-top: clamp(36px, 5vw, 56px);
+    padding-top: clamp(28px, 4vw, 40px);
+    border-top: 1px solid color-mix(in srgb, var(--cream) 22%, transparent);
+  }
+  @media (min-width: 720px) {
+    .site-footer__grid {
+      grid-template-columns: 1.2fr 1fr 1fr;
+    }
+  }
+  .site-footer__brand {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+  .site-footer__addr {
+    margin: 2px 0;
+    font-size: 0.9rem;
+    color: color-mix(in srgb, var(--cream) 85%, transparent);
+  }
+  .site-footer__nav,
+  .site-footer__links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.9rem;
+  }
+  .site-footer__copy {
+    text-align: center;
+    margin: 32px 0 0;
+    font-size: 0.8rem;
+    color: color-mix(in srgb, var(--cream) 70%, transparent);
+  }
+</style>

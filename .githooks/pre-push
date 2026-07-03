@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# ============================================================
+#  pre-push GUARD（ツール非依存）
+# ------------------------------------------------------------
+#  git を使う“あらゆる操作”に効きます（Antigravity / Claude /
+#  ターミナル / 他エディタ）。強制push（履歴の巻き戻し）と
+#  ブランチ削除pushをブロックし、リモート履歴の破壊を防ぎます。
+#
+#  有効化: リポジトリ直下で `bash setup-guardrails.sh` を1回実行
+#         （= git config core.hooksPath .githooks）。
+# ============================================================
+zero="0000000000000000000000000000000000000000"
+status=0
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  # ブランチ削除（ローカル側が空）
+  if [ "$local_sha" = "$zero" ]; then
+    echo "🛑 GUARD: ブランチ削除のpushをブロックしました（$remote_ref）" >&2
+    echo "   本当に消す場合は、GitHubの画面から意図的に操作してください。" >&2
+    status=1
+    continue
+  fi
+
+  # 新規ブランチ（リモートに存在しない）は許可
+  if [ "$remote_sha" = "$zero" ]; then
+    continue
+  fi
+
+  # 非fast-forward = 強制push（履歴の巻き戻し）を検知
+  if ! git merge-base --is-ancestor "$remote_sha" "$local_sha" 2>/dev/null; then
+    echo "🛑 GUARD: 強制push（履歴の巻き戻し）をブロックしました（$remote_ref）" >&2
+    echo "   通常の更新なら、先に 'git pull' で取り込んでから push してください。" >&2
+    echo "   どうしても必要な特別な場合のみ、人間が内容を確認して手動対応を。" >&2
+    status=1
+  fi
+done
+
+exit $status

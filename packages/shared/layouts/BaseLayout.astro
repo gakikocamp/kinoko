@@ -1,0 +1,122 @@
+---
+import type { StoreInfo } from "../lib/site";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import "../styles/global.css";
+
+interface Props {
+  store: StoreInfo;
+  /** ページ固有タイトル（店名は自動で付与） */
+  title?: string;
+  description?: string;
+  /** 現在のパス（ナビのハイライト用） 例: "/menu" */
+  path?: string;
+}
+
+const { store, title, description, path = "/" } = Astro.props;
+const fullTitle = title ? `${title}｜${store.name}` : store.name;
+const desc =
+  description ??
+  `${store.name}の公式サイト。${store.tagline} 保護犬の里親募集・B型就労支援・スタッフ募集の情報もこちら。`;
+const canonical = new URL(path, store.url).toString();
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+
+    <!-- 編集的タイポグラフィ用の Web フォント -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="canonical" href={canonical} />
+
+    <!-- OGP -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={store.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    {
+      path === "/" && (
+        <div class="intro-curtain" aria-hidden="true">
+          <span class="intro-curtain__mark">Anela</span>
+        </div>
+      )
+    }
+
+    <Header store={store} path={path} />
+    <main>
+      <slot />
+    </main>
+    <Footer store={store} />
+
+    <div class="grain" aria-hidden="true"></div>
+
+    <script>
+      // --- スクロール演出：ビューポートに入った要素に .is-in を付与 ---
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const targets = document.querySelectorAll(".reveal, .reveal-stagger, .reveal-line");
+
+      if (reduceMotion || !("IntersectionObserver" in window)) {
+        targets.forEach((el) => el.classList.add("is-in"));
+      } else {
+        const io = new IntersectionObserver(
+          (entries, obs) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-in");
+                obs.unobserve(entry.target);
+              }
+            }
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
+        );
+        targets.forEach((el) => io.observe(el));
+      }
+
+      // --- ヘッダー：スクロール量に応じて状態クラスを切り替え ---
+      const header = document.querySelector(".site-header");
+      if (header) {
+        const onScroll = () => {
+          header.classList.toggle("is-scrolled", window.scrollY > 24);
+        };
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+      }
+
+      // --- ヒーロー画像の軽いパララックス ---
+      const parallax = document.querySelectorAll("[data-parallax]");
+      if (parallax.length && !reduceMotion) {
+        let ticking = false;
+        const update = () => {
+          const y = window.scrollY;
+          parallax.forEach((el) => {
+            (el as HTMLElement).style.transform = `translateY(${y * -0.06}px)`;
+          });
+          ticking = false;
+        };
+        window.addEventListener(
+          "scroll",
+          () => {
+            if (!ticking) {
+              ticking = true;
+              requestAnimationFrame(update);
+            }
+          },
+          { passive: true }
+        );
+      }
+    </script>
+  </body>
+</html>

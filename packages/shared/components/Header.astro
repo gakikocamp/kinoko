@@ -1,0 +1,202 @@
+---
+import type { StoreInfo } from "../lib/site";
+import { withBase } from "../lib/url";
+
+interface Props {
+  store: StoreInfo;
+  path: string;
+}
+const { store, path } = Astro.props;
+
+const nav = [
+  { href: "/", label: "ホーム" },
+  { href: "/access", label: "アクセス" },
+  { href: "/news", label: "お知らせ" },
+  { href: "/adoption", label: "里親募集" },
+  { href: "/welfare", label: "就労支援" },
+  { href: "/recruit", label: "スタッフ募集" },
+  { href: "/contact", label: "お問い合わせ" },
+];
+
+const isActive = (href: string) =>
+  href === "/" ? path === "/" : path.startsWith(href);
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a href={withBase("/")} class="brand">
+      <span class="brand__name">アネラカフェ</span>
+      <span class="brand__store">{store.shortName}</span>
+    </a>
+
+    <input type="checkbox" id="navToggle" class="nav-toggle" />
+    <label for="navToggle" class="nav-toggle-btn" aria-label="メニューを開閉">
+      <span></span><span></span><span></span>
+    </label>
+
+    <nav class="site-nav" aria-label="メインナビゲーション">
+      {
+        nav.map((item) => (
+          <a
+            href={withBase(item.href)}
+            class:list={["site-nav__link", { "is-active": isActive(item.href) }]}
+            aria-current={isActive(item.href) ? "page" : undefined}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--cream) 80%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid transparent;
+    box-shadow: inset 0 3px 0 0 var(--brown);
+    transition:
+      background 0.3s var(--ease-out),
+      box-shadow 0.3s var(--ease-out),
+      border-color 0.3s ease;
+  }
+  .site-header.is-scrolled {
+    background: color-mix(in srgb, var(--cream) 92%, transparent);
+    backdrop-filter: blur(14px) saturate(1.2);
+    border-bottom-color: var(--line);
+    box-shadow:
+      inset 0 3px 0 0 var(--brown),
+      0 8px 24px -16px rgba(60, 110, 121, 0.5);
+  }
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 72px;
+    transition: min-height 0.3s var(--ease-out);
+  }
+  .site-header.is-scrolled .site-header__inner {
+    min-height: 60px;
+  }
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    line-height: 1;
+  }
+  .brand:hover {
+    text-decoration: none;
+  }
+  .brand__name {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--brown-deep);
+    letter-spacing: 0.04em;
+    transition: color 0.2s ease;
+  }
+  .brand:hover .brand__name {
+    color: var(--brown);
+  }
+  .brand__store {
+    font-size: 0.85rem;
+    color: var(--terracotta-deep);
+    font-weight: 700;
+  }
+
+  .site-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+  }
+  .site-nav__link {
+    position: relative;
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    font-weight: 600;
+    padding: 6px 4px;
+    transition: color 0.2s ease;
+  }
+  /* スライドインする下線 */
+  .site-nav__link::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    bottom: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--terracotta), var(--gold));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.28s var(--ease-out);
+  }
+  .site-nav__link:hover {
+    color: var(--brown-deep);
+    text-decoration: none;
+  }
+  .site-nav__link:hover::after {
+    transform: scaleX(1);
+  }
+  .site-nav__link.is-active {
+    color: var(--brown-deep);
+  }
+  .site-nav__link.is-active::after {
+    transform: scaleX(1);
+  }
+
+  /* mobile toggle */
+  .nav-toggle,
+  .nav-toggle-btn {
+    display: none;
+  }
+
+  @media (max-width: 880px) {
+    .nav-toggle-btn {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+    }
+    .nav-toggle-btn span {
+      height: 2px;
+      width: 24px;
+      background: var(--brown-deep);
+      border-radius: 2px;
+      transition: 0.2s;
+    }
+    .site-nav {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      gap: 0;
+      background: var(--cream);
+      border-bottom: 1px solid var(--line);
+      box-shadow: var(--shadow-sm);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.25s ease;
+    }
+    .nav-toggle:checked ~ .site-nav {
+      max-height: 70vh;
+    }
+    .site-nav__link {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+    .site-nav__link.is-active {
+      border-bottom-color: var(--line);
+      background: var(--cream-deep);
+    }
+  }
+</style>

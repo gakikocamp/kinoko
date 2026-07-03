@@ -1,0 +1,35 @@
+---
+import type { StoreInfo } from "../lib/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ContactMethods from "../components/ContactMethods.astro";
+import PageHeader from "../components/PageHeader.astro";
+import { Content as WelfareContent } from "../content/welfare.md";
+
+interface Props {
+  store: StoreInfo;
+}
+const { store } = Astro.props;
+---
+
+<BaseLayout store={store} path="/welfare" title="就労継続支援B型 利用者募集">
+  <PageHeader
+    kicker="Welfare"
+    title="就労継続支援B型 利用者募集"
+    lead="自分のペースで働ける場所。見学・ご相談はいつでも歓迎です。"
+  />
+  <section class="section">
+    <div class="container">
+      <article class="prose">
+        <WelfareContent />
+      </article>
+
+      <div style="margin-top:40px;max-width:720px;margin-inline:auto">
+        <ContactMethods
+          store={store}
+          heading="見学・ご相談はこちら"
+          mailSubject="就労支援B型の見学希望"
+        />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

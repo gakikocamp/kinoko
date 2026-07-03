@@ -1,0 +1,96 @@
+---
+// 下層ページ共通の編集的ページヘッダー（英字キッカー＋大きな明朝タイトル＋リード）
+interface Props {
+  /** 英字キッカー 例: "Access" */
+  kicker: string;
+  /** ページタイトル（<br> を含めてもよい） */
+  title: string;
+  /** 補足リード（任意） */
+  lead?: string;
+}
+const { kicker, title, lead } = Astro.props;
+---
+
+<header class="page-head">
+  <span class="page-head__aurora" aria-hidden="true"></span>
+  <div class="container">
+    <p class="page-head__kicker en">{kicker}</p>
+    <h1 class="page-head__title" set:html={title}></h1>
+    {lead && <p class="page-head__lead">{lead}</p>}
+  </div>
+</header>
+
+<style>
+  .page-head {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    text-align: center;
+    padding-block: clamp(64px, 10vw, 132px) clamp(36px, 5vw, 60px);
+    border-bottom: 1px solid var(--line);
+  }
+  .page-head__aurora {
+    position: absolute;
+    inset: -40% -10% auto;
+    height: 120%;
+    z-index: -1;
+    background:
+      radial-gradient(
+        50% 80% at 70% 0%,
+        color-mix(in srgb, var(--brown) 16%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        40% 70% at 20% 10%,
+        color-mix(in srgb, var(--gold) 12%, transparent),
+        transparent 70%
+      );
+    filter: blur(10px);
+  }
+
+  .page-head__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    font-style: italic;
+    letter-spacing: 0.18em;
+    font-size: 0.9rem;
+    color: var(--gold-deep);
+    margin: 0;
+    opacity: 0;
+    animation: ph-in 0.8s var(--ease-out) 0.05s forwards;
+  }
+  .page-head__kicker::before,
+  .page-head__kicker::after {
+    content: "";
+    width: 34px;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.6;
+  }
+
+  .page-head__title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 1.3rem + 3vw, 3.4rem);
+    line-height: 1.32;
+    letter-spacing: 0.04em;
+    color: var(--brown-deep);
+    margin: 18px 0 0;
+    font-weight: 600;
+    opacity: 0;
+    animation: ph-in 0.8s var(--ease-out) 0.2s forwards;
+  }
+  .page-head__lead {
+    color: var(--ink-soft);
+    max-width: 58ch;
+    margin: 20px auto 0;
+    font-size: 1.02rem;
+    opacity: 0;
+    animation: ph-in 0.8s var(--ease-out) 0.35s forwards;
+  }
+
+  @keyframes ph-in {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: none; }
+  }
+</style>

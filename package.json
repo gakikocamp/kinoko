@@ -1,0 +1,20 @@
+{
+  "name": "anela-cafe-fukuoka",
+  "version": "0.1.0",
+  "private": true,
+  "description": "アネラカフェ福岡（大濠店・原田店）のホームページ。Astro + pnpm モノレポ。",
+  "type": "module",
+  "scripts": {
+    "dev:ohori": "pnpm --filter ohori dev",
+    "dev:harada": "pnpm --filter harada dev",
+    "build": "pnpm -r build",
+    "build:ohori": "pnpm --filter ohori build",
+    "build:harada": "pnpm --filter harada build",
+    "preview:ohori": "pnpm --filter ohori preview",
+    "preview:harada": "pnpm --filter harada preview"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@10.33.0"
+}
