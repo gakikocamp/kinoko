@@ -47,3 +47,10 @@ Cloudflare Pages に**店舗ごと1プロジェクト**。手順は `handoff/02_
 - 共通の作法: 編集的見出し `.s-head`（`.counts` 内で連番）、下層先頭は `<PageHeader>`、スクロール演出は `.reveal*`（`BaseLayout` の IO が `.is-in` 付与）、装飾は `.grain`／`.intro-curtain`／`.marquee`。
 - モーションは必ず `prefers-reduced-motion: reduce` を尊重する（既存の指定を壊さない）。
 - 設計の全体像は `handoff/04_ANTIGRAVITY.md` の「4. いまの状態」。
+
+## 安全（必読）
+破壊的操作の防止とリカバリーは `SAFETY.md` にまとめている。
+- `.claude/settings.json`：`rm`/`git push`/`git reset` 等は実行前に確認を求める（許可制）。
+- `.claude/guard.sh`：`rm -rf /`・強制push・`dd` 等のカタストロフィックな命令を PreToolUse で即ブロック。
+- **禁止**: `--dangerously-skip-permissions`（全許可）での起動。上のガードが無効化される。
+- 大きな変更の前後は必ず `git add -A && git commit && git push`（＝復元ポイント）。困ったら `git status`→`git reflog`。

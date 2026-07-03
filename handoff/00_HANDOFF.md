@@ -18,6 +18,7 @@
 
 > リポジトリ直下の `README.md`（全体説明）と `packages/shared/BRAND.md`（ブランドガイド）も合わせて参照してください。
 > AIエディタ向けの要点は、リポジトリ直下の `AGENTS.md` にまとめています。
+> **安全対策・誤削除からの復旧手順は、リポジトリ直下の `SAFETY.md` を必ず読んでください。**
 
 ## 30秒サマリー
 - **技術**: Astro + pnpm モノレポ。`packages/shared`（共通）＋ `sites/ohori`・`sites/harada`（店舗別）。
