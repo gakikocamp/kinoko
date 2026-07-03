@@ -10,6 +10,7 @@ AIエディタ／エージェント向けのプロジェクト要点です。引
 3. `mkfs` / `dd` / デバイス直書き / `sudo rm` などディスク破壊系を実行しない。
 4. 大きな変更の**前後**で必ず `git add -A && git commit && git push`（＝復元ポイントを残す）。
 5. 迷ったら破壊しない。まず `git status` と `git reflog` を見る。全許可モード（`--dangerously-skip-permissions`）で起動しない。
+6. **秘密情報（APIキー/トークン/パスワード）と個人情報・名簿はコミットしない**。秘密は `.env`（除外済み）へ、名簿・顧客データはリポジトリ外へ。`.githooks/pre-commit` が自動でブロックする。
 > このリポジトリには機械的なガードも入っています（`.claude/guard.sh`＝Claude用、`.githooks/pre-push`＝全ツール共通）。
 > 初回に `bash setup-guardrails.sh` を実行して git フックを有効化すること。
 

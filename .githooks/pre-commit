@@ -2,12 +2,13 @@
 # ============================================================
 #  pre-commit SECRET GUARD（ツール非依存）
 # ------------------------------------------------------------
-#  コミットしようとしている内容に「秘密情報らしきもの」があれば
-#  コミットを止めます。Antigravity / Claude / ターミナル 共通。
+#  コミットしようとしている内容に「秘密情報」や「個人情報・名簿」が
+#  あればコミットを止めます。Antigravity / Claude / ターミナル 共通。
 #
 #  有効化: `bash setup-guardrails.sh`（core.hooksPath .githooks）
 # ============================================================
-staged="$(git diff --cached --name-only --diff-filter=ACM)"
+# core.quotePath=false で日本語ファイル名もそのまま扱う
+staged="$(git -c core.quotePath=false diff --cached --name-only --diff-filter=ACM)"
 [ -z "$staged" ] && exit 0
 
 fail=0
@@ -20,7 +21,17 @@ if [ -n "$envfiles" ]; then
   printf '%s\n' "$envfiles" | sed 's/^/     - /' >&2
 fi
 
-# 2) 追加された行の中身をスキャン
+# 2) 個人情報・名簿らしき「ファイル」をコミットしようとしていないか
+#    （顧客名簿・会員リスト等は原則リポジトリに入れない運用）
+piifiles="$(printf '%s\n' "$staged" | grep -Ei '\.(csv|tsv|xlsx?|numbers|vcf|ics)$|名簿|顧客|個人情報|会員|customer|roster|personal[_-]?info|members?[_-]?list')"
+if [ -n "$piifiles" ]; then
+  note "個人情報・名簿らしきファイルをコミットしようとしています（リポジトリに入れない運用）:"
+  printf '%s\n' "$piifiles" | sed 's/^/     - /' >&2
+  echo "     ※ お客様の名簿・会員リスト等はリポジトリに置かないでください。" >&2
+  echo "       本当にサイトに必要なデータファイルだけ、内容を確認のうえ許可してください。" >&2
+fi
+
+# 3) 追加された行の中身をスキャン
 added="$(git diff --cached -U0 --diff-filter=ACM | grep -E '^\+' | grep -vE '^\+\+\+')"
 
 check() { # $1=正規表現 $2=ラベル

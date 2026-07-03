@@ -70,6 +70,11 @@ cp .claude/guard.sh ~/.claude/guard.sh
 - このサイトは静的サイトで、**そもそもパスワードを持ちません**。`store.ts` の住所・電話・メール・Instagram は“サイトに載る公開情報”で秘密ではありません。
 - 秘密の値（Cloudflareトークン等）は **`.env`（`.gitignore`で除外済み）** に置く運用。コミットされません。
 - さらに **`.githooks/pre-commit`（SECRET GUARD）** を追加済み：コミット内容にAPIキー/トークン/秘密鍵/パスワード直書き/`.env`が混じると、**コミット自体をブロック**します（Antigravity/ターミナル/Claude 共通。`setup-guardrails.sh` で有効化）。
+- **個人情報・名簿はリポジトリに入れない運用**（技術的にも強制）：
+  - `.gitignore` で表計算/連絡先系（`*.csv` `*.xlsx` `*.numbers` `*.vcf` `*.ics` や `*名簿*` `*顧客*` `*会員*` 等）を既定で除外。
+  - `.githooks/pre-commit` が、名簿らしきファイル（顧客名簿.csv・会員リスト.xlsx 等、日本語名も検知）の**コミットをブロック**。
+  - お客様の名簿・会員データ等は**リポジトリではなく別の安全な場所**（暗号化した保管先等）で管理すること。
+  - どうしてもサイトに必要なデータファイルだけ、`.gitignore` に `!パス` で個別許可し、中身を確認のうえコミット。
 - 推奨設定：GitHub → リポジトリ → Settings → Code security で **Secret scanning / Push protection** をON（対応プランの場合）。リポジトリの公開範囲は Settings → General 最下部で確認・変更できます（Private推奨）。
 - **もし誤って秘密を上げてしまったら**：まず**その値を無効化＝作り直す（ローテーション）**のが最優先（git履歴には残るため）。そのうえで必要なら履歴から除去。
 
