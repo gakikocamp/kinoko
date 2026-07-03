@@ -65,6 +65,14 @@ cp .claude/guard.sh ~/.claude/guard.sh
 
 ---
 
+## 秘密情報の流出を防ぐ（GitHubは“非公開”にできる）
+- **GitHub のプライベートリポジトリは完全に非公開**です。あなたと、明示的に招待した人以外は一切見られません（検索にも出ません）。「公開しかできない」は誤解です。
+- このサイトは静的サイトで、**そもそもパスワードを持ちません**。`store.ts` の住所・電話・メール・Instagram は“サイトに載る公開情報”で秘密ではありません。
+- 秘密の値（Cloudflareトークン等）は **`.env`（`.gitignore`で除外済み）** に置く運用。コミットされません。
+- さらに **`.githooks/pre-commit`（SECRET GUARD）** を追加済み：コミット内容にAPIキー/トークン/秘密鍵/パスワード直書き/`.env`が混じると、**コミット自体をブロック**します（Antigravity/ターミナル/Claude 共通。`setup-guardrails.sh` で有効化）。
+- 推奨設定：GitHub → リポジトリ → Settings → Code security で **Secret scanning / Push protection** をON（対応プランの場合）。リポジトリの公開範囲は Settings → General 最下部で確認・変更できます（Private推奨）。
+- **もし誤って秘密を上げてしまったら**：まず**その値を無効化＝作り直す（ローテーション）**のが最優先（git履歴には残るため）。そのうえで必要なら履歴から除去。
+
 ## あなたが1回だけ設定すること（チェックリスト）
 
 - [ ] **GitHub ブランチ保護**（③）: GitHub → リポジトリ → Settings → Branches →

@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# ============================================================
+#  pre-commit SECRET GUARD（ツール非依存）
+# ------------------------------------------------------------
+#  コミットしようとしている内容に「秘密情報らしきもの」があれば
+#  コミットを止めます。Antigravity / Claude / ターミナル 共通。
+#
+#  有効化: `bash setup-guardrails.sh`（core.hooksPath .githooks）
+# ============================================================
+staged="$(git diff --cached --name-only --diff-filter=ACM)"
+[ -z "$staged" ] && exit 0
+
+fail=0
+note() { echo "🛑 SECRET GUARD: $1" >&2; fail=1; }
+
+# 1) .env 系ファイル自体をコミットしようとしていないか（.env.example は除外）
+envfiles="$(printf '%s\n' "$staged" | grep -Ei '(^|/)\.env($|\.)' | grep -viE '\.env\.example$')"
+if [ -n "$envfiles" ]; then
+  note ".env 系ファイルをコミットしようとしています（秘密情報の恐れ）:"
+  printf '%s\n' "$envfiles" | sed 's/^/     - /' >&2
+fi
+
+# 2) 追加された行の中身をスキャン
+added="$(git diff --cached -U0 --diff-filter=ACM | grep -E '^\+' | grep -vE '^\+\+\+')"
+
+check() { # $1=正規表現 $2=ラベル
+  if printf '%s\n' "$added" | grep -Eiq "$1"; then
+    note "$2 らしき文字列が含まれています。"
+  fi
+}
+check '-----BEGIN [A-Z ]*PRIVATE KEY-----'                          "秘密鍵(PRIVATE KEY)"
+check 'AKIA[0-9A-Z]{16}'                                            "AWSアクセスキー"
+check 'AIza[0-9A-Za-z_-]{35}'                                       "Google APIキー"
+check 'gh[pousr]_[0-9A-Za-z]{20,}'                                  "GitHubトークン"
+check 'xox[baprs]-[0-9A-Za-z-]{10,}'                                "Slackトークン"
+check '(password|passwd|secret|api[_-]?key|access[_-]?token|auth[_-]?token)["'"'"' ]*[:=]["'"'"' ]*["'"'"'][^"'"'"']{8,}' "パスワード/トークンの直書き"
+
+if [ "$fail" -ne 0 ]; then
+  echo "" >&2
+  echo "  → 秘密情報はコミットしないでください。値は .env（コミット対象外）に置くか、削除を。" >&2
+  echo "  → 誤検知で本当に問題ない時のみ、人間が確認のうえ 'git commit --no-verify' で回避できます。" >&2
+  exit 1
+fi
+exit 0
