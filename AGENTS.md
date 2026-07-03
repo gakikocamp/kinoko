@@ -14,6 +14,13 @@ AIエディタ／エージェント向けのプロジェクト要点です。引
 > このリポジトリには機械的なガードも入っています（`.claude/guard.sh`＝Claude用、`.githooks/pre-push`＝全ツール共通）。
 > 初回に `bash setup-guardrails.sh` を実行して git フックを有効化すること。
 
+## モデル運用（コスト節約：Fableで考え、Sonnetで実装）
+- **本体＝Fable（`claude-fable-5`）**：設計・構造・方針決定・レビュー・段取り（オーケストレーション）を担当。`.claude/settings.json` で既定モデルに設定済み。
+- **実装の手作業＝Sonnet**：ファイル編集・生成・データ配線・ビルド等の**トークンを多く使う機械的作業**は、`implementer` サブエージェント（`.claude/agents/implementer.md`、model: sonnet）へ**委譲する**。
+- 使い分けの目安：**「どう作るか」を決める＝本体(Fable)／「決まったものを作る」＝implementer(Sonnet)**。
+- 明確な仕様が固まったら、実装は基本 implementer に投げる。設計変更が要るときだけ本体に戻す。
+- モデルを変えたいときは `/model` で切り替え、または `.claude/settings.json` の `model` を編集。
+
 ## これは何か
 アネラカフェ福岡 **大濠店・原田店** の公式サイト。1リポジトリで2サイトを生成する
 **Astro + pnpm モノレポ**。詳細は `README.md`、制作経緯は `handoff/01_PRODUCTION_LOG.md`。
