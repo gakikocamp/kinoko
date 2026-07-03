@@ -21,10 +21,19 @@
 | ② GitHub（遠隔コピー） | Macが丸ごと壊れても、クラウドに全部残る | 要：**こまめにpush** |
 | ③ GitHub ブランチ保護 | AIが強制pushしても、本番履歴を上書きさせない | **要設定**（下記） |
 | ④ Claude Code の許可制 | 削除・push等は**実行前に確認**を求める | 有効（`.claude/settings.json`） |
-| ⑤ SAFETY GUARD フック | `rm -rf /` 等のカタストロフィックな命令を**ブロック** | 有効（`.claude/guard.sh`） |
-| ⑥ Time Machine / iCloud | gitの外（未コミット）も含めてMac全体を復元 | 要：**Time Machine ON** |
+| ⑤ SAFETY GUARD フック | `rm -rf /` 等のカタストロフィックな命令を**ブロック**（Claude用） | 有効（`.claude/guard.sh`） |
+| ⑥ git pre-push フック | **強制push・ブランチ削除**をブロック（**全ツール共通**：Antigravity/ターミナル等） | 要：**`setup-guardrails.sh` を1回実行** |
+| ⑦ Time Machine / iCloud | gitの外（未コミット）も含めてMac全体を復元 | 要：**Time Machine ON** |
 
-> ④⑤はこのリポジトリに組み込み済み。③⑥は**あなたの手で1回設定**すれば完成します（下記チェックリスト）。
+> ④⑤⑥はこのリポジトリに組み込み済み（⑥は有効化コマンドを1回だけ）。③⑦は**あなたの手で1回設定**すれば完成します（下記チェックリスト）。
+
+### まず1回だけ：ガードを有効化する
+リポジトリ直下で次を実行すると、全ツール共通の pre-push ガード（⑥）が有効になります：
+```bash
+bash setup-guardrails.sh
+```
+これは `git config core.hooksPath .githooks` を行い、Antigravity でも・ターミナルでも・Claude でも、
+**強制pushやブランチ削除を git レベルで拒否**します（どのツールから git を使っても効く）。
 
 ---
 

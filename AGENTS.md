@@ -3,6 +3,16 @@
 AIエディタ／エージェント向けのプロジェクト要点です。引き継ぎはまず `handoff/04_ANTIGRAVITY.md`（手順＋キックオフ指示）、
 次に `handoff/00_HANDOFF.md` を読んでください。
 
+## ⛔ 絶対ルール（すべてのエージェント／人間が厳守）
+破壊的操作は原則禁止。以下は**人間の明示的な確認なしに実行しないこと**。詳細と復旧は `SAFETY.md`。
+1. `rm -rf` でルート/ホーム/ワイルドカード（`/`・`~`・`$HOME`・`*`・`/*`）を対象にしない。削除は対象を限定し、必要最小限に。
+2. `git push --force` / `-f`、`git reset --hard`、`git clean -f`、`git branch -D`、ブランチ削除pushをしない。
+3. `mkfs` / `dd` / デバイス直書き / `sudo rm` などディスク破壊系を実行しない。
+4. 大きな変更の**前後**で必ず `git add -A && git commit && git push`（＝復元ポイントを残す）。
+5. 迷ったら破壊しない。まず `git status` と `git reflog` を見る。全許可モード（`--dangerously-skip-permissions`）で起動しない。
+> このリポジトリには機械的なガードも入っています（`.claude/guard.sh`＝Claude用、`.githooks/pre-push`＝全ツール共通）。
+> 初回に `bash setup-guardrails.sh` を実行して git フックを有効化すること。
+
 ## これは何か
 アネラカフェ福岡 **大濠店・原田店** の公式サイト。1リポジトリで2サイトを生成する
 **Astro + pnpm モノレポ**。詳細は `README.md`、制作経緯は `handoff/01_PRODUCTION_LOG.md`。
