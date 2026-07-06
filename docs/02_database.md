@@ -10,8 +10,11 @@ products ──< product_lots
 deals ──< deal_items >── products / product_lots
 deals ──< deal_processing_costs   ← 社内原価(PDFに出さない)
 deals ──< deal_cartons            ← Packing List用カートン明細
+deals ──< deal_compliance_checks  ← 仕向国要件チェックリスト(§07)
+destination_countries ──< deals   ← 国マスタ(輸出可否ステータス)(§07)
 company_settings (単一行: 自社情報・銀行/Wise・署名)
 number_sequences (自動採番カウンタ)
+audit_logs (監査ログ・INSERTのみ)(§08)
 ```
 
 設計方針:
@@ -131,7 +134,9 @@ create table deals (
   currency              text not null default 'USD',
   payment_terms         text,
   incoterms             text,        -- 例: "FOB Fukuoka" / "DAP London"(場所込みで保存)
-  destination_country   text,
+  destination_country   text references destination_countries (code),
+                        -- 国マスタ(§07)を参照。🔴prohibited の国は案件作成をブロック、
+                        -- ⚪unverified の国は PI発行をブロック(アプリ層+DBトリガで二重に防ぐ)
   expected_ship_date    date,
   -- 金額(明細合計はdeal_itemsから集計。以下は加算要素とキャッシュ)
   custom_packaging_fee  numeric(12,2) not null default 0,  -- 顧客向け加工費
@@ -235,6 +240,7 @@ create table documents (
   issue_date    date not null,
   data          jsonb not null,   -- ★発行時点の全記載内容スナップショット
   pdf_file_path text not null,    -- 生成PDFのStorageパス
+  pdf_sha256    text,             -- 生成PDFのハッシュ(改ざん検知・§08)
   status        text not null default 'issued'
                 check (status in ('issued', 'void')),
   created_by    uuid references profiles (id),
@@ -293,6 +299,17 @@ $$;
 -- INSERT ... ON CONFLICT は行ロックにより同時実行でも重複しない。
 -- 年が変わると自動的に 0001 から再スタート。
 -- 番号は「発行確定時」にのみ採番する(プレビュー段階では採番しない=欠番防止)。
+
+-- ============================================================
+-- 仕向国コンプライアンス(定義・シードデータは §07 参照)
+-- ============================================================
+-- destination_countries    : 国マスタ(ISOコード・可否ステータス・要件チェックリスト・最終確認日)
+-- deal_compliance_checks   : 案件ごとの要件チェック状況(案件作成時に国マスタからコピー)
+
+-- ============================================================
+-- 監査ログ(定義は §08 参照)
+-- ============================================================
+-- audit_logs : 全主要操作の記録。INSERTのみ許可(UPDATE/DELETE不可のRLS)
 ```
 
 ## RLS(Row Level Security)方針
