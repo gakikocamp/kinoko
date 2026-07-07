@@ -4,17 +4,14 @@ import { repo } from "@/lib/data";
 import { money, dateJa } from "@/lib/format";
 import { CountryBadge, DealStatusBadge, InternalOnlyBadge } from "@/components/badges";
 import { STAGES, statusStage, statusLabel } from "@/lib/status";
+import { DOC_INFO } from "@/lib/docs-info";
 import { NextActionButton } from "./next-action";
+import { PaymentsSection } from "./payments-section";
+import { FilesSection } from "./files-section";
 
 export const dynamic = "force-dynamic";
 
 const STAGE_ICONS = ["💬", "📄", "💰", "📦", "✅"];
-
-const DOC_TYPE_LABEL = {
-  proforma_invoice: "Proforma Invoice",
-  commercial_invoice: "Commercial Invoice",
-  packing_list: "Packing List",
-} as const;
 
 export default async function DealDetailPage({
   params,
@@ -24,7 +21,12 @@ export default async function DealDetailPage({
   const { id } = await params;
   const deal = await repo.getDeal(id);
   if (!deal) notFound();
-  const documents = await repo.listDocuments(id);
+  const [documents, payments, files] = await Promise.all([
+    repo.listDocuments(id),
+    repo.listPayments(id),
+    repo.listFiles(id),
+  ]);
+  const paymentsTotal = payments.reduce((s, p) => s + p.amount, 0);
 
   const stage = statusStage(deal.status);
   const canIssuePi =
@@ -102,26 +104,82 @@ export default async function DealDetailPage({
       )}
 
       <div className="fade-up-2">
-        <NextActionButton dealId={deal.id} status={deal.status} />
+        <NextActionButton
+          dealId={deal.id}
+          status={deal.status}
+          paymentsTotal={paymentsTotal}
+          dealTotal={deal.total_amount}
+          currency={deal.currency}
+        />
       </div>
 
-      {/* 書類(PI / CI / PL) */}
+      {/* 書類(PI / CI / PL)— 進み具合に応じて「いまはこれ」を案内(docs/06) */}
       <section className="fade-up-2 card p-6">
-        <h2 className="font-extrabold text-matcha-900">📄 書類</h2>
+        <h2 className="font-extrabold text-matcha-900">📄 書類をつくる</h2>
         <p className="mt-0.5 text-xs text-matcha-700/60">
-          発行済みの書類は変更できません。修正したいときは案件を直してもう一度発行します
+          発行した書類はあとから変わりません(安心して送れます)。直したいときは案件を修正してもう一度発行するだけ
         </p>
         {canIssuePi ? (
-          <div className="mt-3 flex flex-wrap gap-2">
-            <Link href={`/deals/${deal.id}/pi/new`} className="btn-primary">
-              📄 PIを発行(前払い請求)
-            </Link>
-            <Link href={`/deals/${deal.id}/ci/new`} className="btn-secondary">
-              🛃 CIを発行(通関用・出荷時)
-            </Link>
-            <Link href={`/deals/${deal.id}/pl/new`} className="btn-secondary">
-              📦 Packing Listを発行(出荷時)
-            </Link>
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            {(
+              [
+                { type: "proforma_invoice" as const, href: `/deals/${deal.id}/pi/new` },
+                { type: "commercial_invoice" as const, href: `/deals/${deal.id}/ci/new` },
+                { type: "packing_list" as const, href: `/deals/${deal.id}/pl/new` },
+              ] as const
+            ).map(({ type, href }) => {
+              const info = DOC_INFO[type];
+              const issued = documents.some(
+                (d) => d.doc_type === type && d.status === "issued"
+              );
+              const ciIssued = documents.some(
+                (d) => d.doc_type === "commercial_invoice" && d.status === "issued"
+              );
+              // いまの段階でおすすめの書類を1つだけ光らせる
+              // (PI: 商談〜見積の間 / CI: 入金後 / PL: CI発行後)
+              const recommended = !issued &&
+                (type === "proforma_invoice"
+                  ? stage <= 2
+                  : type === "commercial_invoice"
+                    ? stage >= 3
+                    : stage >= 3 && ciIssued);
+              return (
+                <div
+                  key={type}
+                  className={`flex flex-col rounded-2xl border-2 p-4 ${
+                    recommended
+                      ? "border-matcha-400 bg-matcha-50"
+                      : "border-cream-200 bg-cream-50"
+                  }`}
+                >
+                  {recommended && (
+                    <span className="mb-2 self-start rounded-full bg-matcha-600 px-2.5 py-0.5 text-[10px] font-bold text-white">
+                      ▶ いまはこれ
+                    </span>
+                  )}
+                  {issued && (
+                    <span className="mb-2 self-start rounded-full bg-cream-200 px-2.5 py-0.5 text-[10px] font-bold text-matcha-700">
+                      ✔ 発行済み
+                    </span>
+                  )}
+                  <p className="font-extrabold text-matcha-900">
+                    {info.icon} {info.ja}
+                  </p>
+                  <p className="mt-1 flex-1 text-xs leading-relaxed text-matcha-800/70">
+                    {info.desc}
+                  </p>
+                  <p className="mt-2 text-[11px] font-bold text-matcha-700/60">
+                    🕐 {info.when}
+                  </p>
+                  <Link
+                    href={href}
+                    className={`mt-3 justify-center text-center ${recommended ? "btn-primary" : "btn-secondary"}`}
+                  >
+                    {issued ? "もう一度発行する" : "発行する"}
+                  </Link>
+                </div>
+              );
+            })}
           </div>
         ) : (
           <p className="mt-3 rounded-full bg-cream-200 px-4 py-2 text-xs font-bold text-matcha-700/70">
@@ -131,7 +189,7 @@ export default async function DealDetailPage({
           </p>
         )}
         {documents.length > 0 && (
-          <ul className="mt-4 space-y-2">
+          <ul className="mt-4 space-y-2 border-t border-cream-200 pt-4">
             {documents.map((doc) => (
               <li
                 key={doc.id}
@@ -142,7 +200,7 @@ export default async function DealDetailPage({
                     {doc.doc_number}
                   </span>
                   <span className="ml-2 text-matcha-700/60">
-                    {DOC_TYPE_LABEL[doc.doc_type]} — 発行日 {dateJa(doc.issue_date)}
+                    {DOC_INFO[doc.doc_type].ja} — 発行日 {dateJa(doc.issue_date)}
                   </span>
                 </span>
                 <Link
@@ -211,6 +269,19 @@ export default async function DealDetailPage({
           </div>
         </div>
       </section>
+
+      {/* 入金・ファイル */}
+      <div className="fade-up-3">
+        <PaymentsSection
+          dealId={deal.id}
+          payments={payments}
+          dealTotal={deal.total_amount}
+          currency={deal.currency}
+        />
+      </div>
+      <div className="fade-up-3">
+        <FilesSection dealId={deal.id} files={files} />
+      </div>
 
       {/* 取引条件 */}
       <section className="fade-up-3 card p-6">

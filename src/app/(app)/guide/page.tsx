@@ -9,8 +9,8 @@ const FLOW = [
   },
   {
     icon: "📄",
-    title: "② 見積が決まったら PI を発行",
-    body: "案件画面の「PIを発行する」を押すだけ。足りない情報(住所・EORIなど)があれば発行前に教えてくれます。できたPDFをバイヤーにメールで送り、前払いしてもらいます。",
+    title: "② 見積が決まったら請求書(PI)を発行",
+    body: "案件画面の「発行する」ボタンを押すだけ。足りない情報(住所・EORIなど)があれば発行前に教えてくれます。できたPDFをバイヤーにメールで送り、前払いしてもらいます。",
     action: { label: "案件一覧を見る", href: "/deals" },
   },
   {
@@ -104,7 +104,7 @@ export default function GuidePage() {
         <div className="card mt-3 divide-y divide-cream-200">
           <div className="p-5">
             <p className="font-bold text-matcha-900">
-              Q. 発行したPIを間違えた!
+              Q. 発行した請求書(PI)を間違えた!
             </p>
             <p className="mt-1 text-sm text-matcha-800/80">
               発行済みの書類は変更できません(貿易書類のルールです)。案件の内容を直してから、もう一度発行してください。新しい番号で発行されます。
@@ -115,7 +115,7 @@ export default function GuidePage() {
               Q. 知らない国から問い合わせが来た
             </p>
             <p className="mt-1 text-sm text-matcha-800/80">
-              まず「🌍 国・輸出ルール」でその国を確認。⚪未確認の国はPIを発行できない仕組みなので、JETROや通関業者に確認してから進めましょう。慌てなくて大丈夫です。
+              まず「🌍 国・輸出ルール」でその国を確認。⚪未確認の国は書類を発行できない仕組みなので、JETROや通関業者に確認してから進めましょう。慌てなくて大丈夫です。
             </p>
           </div>
           <div className="p-5">

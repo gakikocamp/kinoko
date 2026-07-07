@@ -3,6 +3,7 @@
 import { useActionState, useMemo, useState } from "react";
 import { createDealAction, type ActionState } from "../actions";
 import { CountrySelect } from "@/components/country-select";
+import { HelpTip } from "@/components/help-tip";
 import { money } from "@/lib/format";
 import type { Country, Customer, Product } from "@/lib/types";
 
@@ -14,7 +15,7 @@ function Field({
   hint,
   requiredMark,
 }: {
-  label: string;
+  label: React.ReactNode;
   children: React.ReactNode;
   hint?: string;
   requiredMark?: boolean;
@@ -56,6 +57,7 @@ export function DealForm({
   const [packagingFee, setPackagingFee] = useState(0);
   const [shippingFee, setShippingFee] = useState(0);
   const [currency, setCurrency] = useState("USD");
+  const [showFee, setShowFee] = useState(false);
 
   const customer = customers.find((c) => c.id === customerId);
   const product = products.find((p) => p.id === productId);
@@ -81,7 +83,7 @@ export function DealForm({
   return (
     <form action={formAction} className="max-w-2xl space-y-6">
       <section className="space-y-5">
-        <h2 className="text-sm font-semibold text-gray-700">1. 顧客と商品</h2>
+        <h2 className="text-base font-extrabold text-matcha-900">1. だれに・なにを売る?</h2>
         <Field label="顧客" requiredMark>
           <select
             name="customer_id"
@@ -146,42 +148,52 @@ export function DealForm({
       </section>
 
       <section className="space-y-5">
-        <h2 className="text-sm font-semibold text-gray-700">2. 加工費・送料</h2>
-        <Field label="加工費の名目(PDF記載・英語)">
+        <h2 className="text-base font-extrabold text-matcha-900">2. 追加の費用(なければ飛ばしてOK)</h2>
+        {!showFee ? (
+          <button
+            type="button"
+            onClick={() => setShowFee(true)}
+            className="btn-secondary"
+          >
+            ✚ 加工費(ラベル貼り・小分けなど)を追加する
+          </button>
+        ) : (
+          <div className="space-y-5 rounded-2xl border-2 border-cream-300 bg-cream-50 p-4">
+            <Field label="加工費の名目(PDFにこのまま載ります・英語)">
+              <input
+                name="packaging_fee_title"
+                defaultValue="Custom repacking & label application fee"
+                className={input}
+              />
+            </Field>
+            <Field label="作業内容の説明(PDFにこのまま載ります・英語)">
+              <textarea
+                name="packaging_fee_desc" rows={3} className={input}
+                placeholder="例: 100g x 200 silver aluminum pouches. Includes label printing/cutting, label application, 100g weighing and repacking, oxygen absorber insertion, heat sealing, lot control, and final quality check."
+              />
+            </Field>
+            <Field label="加工費(バイヤーに請求する金額)">
+              <input
+                name="custom_packaging_fee" type="number" step="0.01" min={0}
+                value={packagingFee || ""}
+                onChange={(e) => setPackagingFee(Number(e.target.value))}
+                className={input}
+              />
+            </Field>
+          </div>
+        )}
+        <Field label="送料" hint="バイヤーが運送を手配する条件(EXW/FOB)なら0のままでOK">
           <input
-            name="packaging_fee_title"
-            defaultValue="Custom repacking & label application fee"
-            className={input}
+            name="shipping_fee" type="number" step="0.01" min={0}
+            value={shippingFee || ""}
+            onChange={(e) => setShippingFee(Number(e.target.value))}
+            className={`${input} max-w-48`}
           />
         </Field>
-        <Field label="加工費の説明(PDF記載・英語)">
-          <textarea
-            name="packaging_fee_desc" rows={3} className={input}
-            placeholder="例: 100g x 200 silver aluminum pouches. Includes label printing/cutting, label application, 100g weighing and repacking, oxygen absorber insertion, heat sealing, lot control, and final quality check."
-          />
-        </Field>
-        <div className="grid grid-cols-2 gap-5">
-          <Field label="加工費(顧客向け金額)">
-            <input
-              name="custom_packaging_fee" type="number" step="0.01" min={0}
-              value={packagingFee || ""}
-              onChange={(e) => setPackagingFee(Number(e.target.value))}
-              className={input}
-            />
-          </Field>
-          <Field label="送料" hint="EXW/FOBなど買い手負担の条件では0のままにします">
-            <input
-              name="shipping_fee" type="number" step="0.01" min={0}
-              value={shippingFee || ""}
-              onChange={(e) => setShippingFee(Number(e.target.value))}
-              className={input}
-            />
-          </Field>
-        </div>
       </section>
 
       <section className="space-y-5">
-        <h2 className="text-sm font-semibold text-gray-700">3. 取引条件</h2>
+        <h2 className="text-base font-extrabold text-matcha-900">3. どこへ・どんな条件で届ける?</h2>
         <Field label="仕向国" requiredMark hint="🔴対応不可の国は案件を作成できません">
           <CountrySelect
             countries={countries}
@@ -203,7 +215,10 @@ export function DealForm({
               <option value="GBP">GBP</option>
             </select>
           </Field>
-          <Field label="インコタームズ">
+          <Field
+            label={<>インコタームズ<HelpTip term="インコタームズ">送料と責任をどこまで自社が持つかの世界共通ルールです。迷ったら: バイヤーが運送を手配するなら FOB、こちらが相手の倉庫まで届けるなら DAP を選べばOK。</HelpTip></>}
+            hint="迷ったら: 相手が運送手配→FOB / こちらが届ける→DAP"
+          >
             <select name="incoterms_rule" defaultValue="" className={input}>
               <option value="">選択してください</option>
               <option value="EXW">EXW(工場渡し)</option>

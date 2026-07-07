@@ -7,9 +7,12 @@ import type {
   CiSnapshot,
   CompanySettings,
   DealStatus,
+  FileCategory,
   PiSnapshot,
   PlSnapshot,
 } from "@/lib/types";
+
+const MAX_FILE_BYTES = 20 * 1024 * 1024; // 20MB(docs/08 §5)
 
 export type ActionState = { error: string } | null;
 
@@ -349,4 +352,70 @@ export async function issuePlAction(
   const docId = await repo.issueDocument(dealId, "packing_list", snapshotBase);
   revalidatePath(`/deals/${dealId}`);
   return { docId };
+}
+
+/** 入金を記録する(docs/05 §5: 100%前払い運用の要) */
+export async function addPaymentAction(
+  dealId: string,
+  formData: FormData
+): Promise<{ error: string } | { ok: true }> {
+  const amount = Number(formData.get("amount"));
+  const receivedDate = String(formData.get("received_date") ?? "");
+  if (!amount || amount <= 0) return { error: "入金額を入力してください" };
+  if (!receivedDate) return { error: "入金日を入力してください" };
+
+  const deal = await repo.getDeal(dealId);
+  if (!deal) return { error: "案件が見つかりません" };
+
+  await repo.addPayment(dealId, {
+    amount,
+    currency: String(formData.get("currency") ?? deal.currency),
+    received_date: receivedDate,
+    method: (formData.get("method") as string) || null,
+    notes: (formData.get("notes") as string) || null,
+  });
+  revalidatePath(`/deals/${dealId}`);
+  return { ok: true };
+}
+
+const UPLOAD_CATEGORIES: FileCategory[] = [
+  "coa", "product_label", "payment_proof",
+  "shipping_receipt", "tracking_doc", "qc_photo", "other",
+];
+
+/** 案件ファイルのアップロード(拡張子・サイズ検証はここで行う・docs/08 §5) */
+export async function uploadDealFileAction(
+  dealId: string,
+  formData: FormData
+): Promise<{ error: string } | { ok: true }> {
+  const file = formData.get("file");
+  const category = formData.get("category") as FileCategory;
+  if (!(file instanceof File) || file.size === 0) {
+    return { error: "ファイルを選択してください" };
+  }
+  if (!UPLOAD_CATEGORIES.includes(category)) {
+    return { error: "種類を選択してください" };
+  }
+  if (file.size > MAX_FILE_BYTES) {
+    return { error: "ファイルが大きすぎます(上限20MB)" };
+  }
+  // 実行可能ファイル拒否(docs/08 §5)
+  if (/\.(exe|sh|bat|cmd|js|msi|app)$/i.test(file.name)) {
+    return { error: "このファイル形式はアップロードできません" };
+  }
+
+  const bytes = Buffer.from(await file.arrayBuffer());
+  await repo.uploadFile(dealId, {
+    category,
+    fileName: file.name,
+    mimeType: file.type || "application/octet-stream",
+    base64: bytes.toString("base64"),
+  });
+  revalidatePath(`/deals/${dealId}`);
+  return { ok: true };
+}
+
+export async function deleteDealFileAction(dealId: string, fileId: string) {
+  await repo.deleteFile(dealId, fileId);
+  revalidatePath(`/deals/${dealId}`);
 }

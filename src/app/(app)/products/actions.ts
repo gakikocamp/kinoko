@@ -45,3 +45,45 @@ export async function updateProductAction(id: string, formData: FormData) {
   revalidatePath("/products");
   redirect(`/products/${id}`);
 }
+
+export async function addLotAction(
+  productId: string,
+  formData: FormData
+): Promise<{ error: string } | { ok: true }> {
+  const lotNumber = String(formData.get("lot_number") ?? "").trim();
+  if (!lotNumber) return { error: "LOT番号を入力してください" };
+  try {
+    await repo.addLot(productId, {
+      lot_number: lotNumber,
+      production_date: (formData.get("production_date") as string) || null,
+      best_before: (formData.get("best_before") as string) || null,
+      notes: (formData.get("notes") as string) || null,
+    });
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "LOTを追加できませんでした" };
+  }
+  revalidatePath(`/products/${productId}`);
+  return { ok: true };
+}
+
+export async function uploadCoaAction(
+  productId: string,
+  lotId: string,
+  formData: FormData
+): Promise<{ error: string } | { ok: true }> {
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) {
+    return { error: "ファイルを選択してください" };
+  }
+  if (file.size > 20 * 1024 * 1024) {
+    return { error: "ファイルが大きすぎます(上限20MB)" };
+  }
+  const bytes = Buffer.from(await file.arrayBuffer());
+  await repo.uploadLotCoa(productId, lotId, {
+    fileName: file.name,
+    mimeType: file.type || "application/octet-stream",
+    base64: bytes.toString("base64"),
+  });
+  revalidatePath(`/products/${productId}`);
+  return { ok: true };
+}

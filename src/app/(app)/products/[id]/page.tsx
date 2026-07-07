@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { repo } from "@/lib/data";
 import { money } from "@/lib/format";
 import { InternalOnlyBadge } from "@/components/badges";
+import { LotsSection } from "./lots-section";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,7 @@ export default async function ProductDetailPage({
   const { id } = await params;
   const p = await repo.getProduct(id);
   if (!p) notFound();
+  const lots = await repo.listLots(id);
 
   return (
     <div className="space-y-6">
@@ -55,6 +57,8 @@ export default async function ProductDetailPage({
         <Row label="販売単価" value={money(p.unit_price, p.price_currency)} />
         <Row label="商品説明(PDF用)" value={p.description} />
       </dl>
+
+      <LotsSection productId={id} lots={lots} />
 
       <dl className="card divide-y divide-cream-200 border-dashed bg-cream-50">
         <Row

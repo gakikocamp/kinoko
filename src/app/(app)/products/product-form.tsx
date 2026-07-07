@@ -1,4 +1,5 @@
 import { InternalOnlyBadge } from "@/components/badges";
+import { HelpTip } from "@/components/help-tip";
 import type { Product } from "@/lib/types";
 
 const input = "input";
@@ -62,7 +63,7 @@ export function ProductForm({
         <Field label="原産国">
           <input name="country_of_origin" defaultValue={initial?.country_of_origin ?? "Japan"} className={input} />
         </Field>
-        <Field label="HSコード" hint="抹茶は0902.10系(3kg以下小売包装)。仕向国で異なる場合は案件側で上書き可">
+        <Field label={<>HSコード<HelpTip term="HSコード">商品の関税分類番号(世界共通)です。抹茶の小売パック(3kg以下)は 0902.10 系。最終確認は通関業者さんにお願いすれば教えてくれます。</HelpTip></>} hint="迷ったらこのまま(0902.10)でOK">
           <input name="hs_code" defaultValue={initial?.hs_code ?? "0902.10"} className={input} />
         </Field>
         <Field label="MOQ(最小注文数)">

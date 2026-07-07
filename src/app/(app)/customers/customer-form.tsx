@@ -1,4 +1,5 @@
 import { CountrySelect } from "@/components/country-select";
+import { HelpTip } from "@/components/help-tip";
 import type { Country, Customer } from "@/lib/types";
 
 function Field({
@@ -7,7 +8,7 @@ function Field({
   hint,
   requiredMark,
 }: {
-  label: string;
+  label: React.ReactNode;
   children: React.ReactNode;
   hint?: string;
   requiredMark?: boolean;
@@ -66,10 +67,10 @@ export function CustomerForm({
       </Field>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        <Field label="VAT番号" hint="EU/UKの買い手は通関に必要">
+        <Field label={<>VAT番号<HelpTip term="VAT番号">ヨーロッパの消費税(VAT)の事業者番号です。EU/UKのバイヤーに「VAT numberを教えてください」と聞けばもらえます。インボイスに記載します。</HelpTip></>}>
           <input name="vat_number" defaultValue={initial?.vat_number ?? ""} className={input} placeholder="例: DE123456789" />
         </Field>
-        <Field label="EORI番号" hint="EU/UK向けでは必須。空のままPIを発行しようとすると警告が出ます">
+        <Field label={<>EORI番号<HelpTip term="EORI番号">EU・イギリスの輸入者が持つ通関用の番号です。EU/UK向けの発送では書類に書いていないと税関で止まることがあるので、必ずバイヤーからもらってください。</HelpTip></>} hint="EU/UK向けでは必須。空のまま請求書(PI)を発行しようとすると警告が出ます">
           <input name="eori_number" defaultValue={initial?.eori_number ?? ""} className={input} placeholder="例: DE1234567890123" />
         </Field>
       </div>

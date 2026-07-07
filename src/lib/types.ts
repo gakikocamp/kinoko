@@ -237,3 +237,48 @@ export interface PlSnapshot {
 }
 
 export type DocSnapshot = PiSnapshot | CiSnapshot | PlSnapshot;
+
+export interface Payment {
+  id: string;
+  deal_id: string;
+  amount: number;
+  currency: string;
+  received_date: string;
+  method: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export type FileCategory =
+  | "pi_pdf"
+  | "ci_pdf"
+  | "pl_pdf"
+  | "coa"
+  | "product_label"
+  | "payment_proof"
+  | "shipping_receipt"
+  | "tracking_doc"
+  | "qc_photo"
+  | "other";
+
+/** 案件ファイル(一覧表示用。urlは署名付き=60秒 or デモではdata URL) */
+export interface StoredFile {
+  id: string;
+  category: FileCategory;
+  file_name: string;
+  mime_type: string | null;
+  size_bytes: number | null;
+  created_at: string;
+  url: string | null;
+}
+
+export interface ProductLot {
+  id: string;
+  product_id: string;
+  lot_number: string;
+  production_date: string | null;
+  best_before: string | null;
+  coa_file_path: string | null;
+  coa_url: string | null; // 表示用(署名付き or data URL)
+  notes: string | null;
+}

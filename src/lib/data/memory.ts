@@ -14,7 +14,10 @@ import type {
   DocSnapshot,
   DocType,
   IssuedDocument,
+  Payment,
   Product,
+  ProductLot,
+  StoredFile,
 } from "../types";
 import type { DataRepo, DealWithRefs } from "./repo";
 
@@ -218,6 +221,20 @@ const dealItems: DealItem[] = [
 
 const documents: IssuedDocument[] = [];
 const dealCartons: DealCarton[] = [];
+const payments: Payment[] = [];
+const dealFiles: (StoredFile & { deal_id: string })[] = [];
+const productLots: ProductLot[] = [
+  {
+    id: "lot-1",
+    product_id: "prod-1",
+    lot_number: "MN-2026-0412",
+    production_date: "2026-04-12",
+    best_before: "2027-04-11",
+    coa_file_path: null,
+    coa_url: null,
+    notes: "春一番茶。EU向けMRL検査済み",
+  },
+];
 const seq: Record<string, number> = { CUST: 2, PROD: 2, DEAL: 2, PI: 0, CI: 0, PL: 0 };
 
 const DOC_PREFIX: Record<DocType, string> = {
@@ -386,6 +403,60 @@ export const memoryRepo: DataRepo = {
       if (dealCartons[i].deal_id === dealId) dealCartons.splice(i, 1);
     }
     rows.forEach((r) => dealCartons.push({ ...r, id: uid(), deal_id: dealId }));
+  },
+
+  async listPayments(dealId) {
+    return payments
+      .filter((p) => p.deal_id === dealId)
+      .sort((a, b) => b.received_date.localeCompare(a.received_date));
+  },
+  async addPayment(dealId, input) {
+    payments.push({ ...input, id: uid(), deal_id: dealId, created_at: now() });
+  },
+
+  async listFiles(dealId) {
+    return dealFiles
+      .filter((f) => f.deal_id === dealId)
+      .sort((a, b) => b.created_at.localeCompare(a.created_at));
+  },
+  async uploadFile(dealId, input) {
+    // デモ: data URL としてメモリ保持(本番はSupabase Storage+署名URL)
+    dealFiles.push({
+      id: uid(),
+      deal_id: dealId,
+      category: input.category,
+      file_name: input.fileName,
+      mime_type: input.mimeType,
+      size_bytes: Math.round(input.base64.length * 0.75),
+      created_at: now(),
+      url: `data:${input.mimeType};base64,${input.base64}`,
+    });
+  },
+  async deleteFile(dealId, fileId) {
+    const i = dealFiles.findIndex((f) => f.id === fileId && f.deal_id === dealId);
+    if (i >= 0) dealFiles.splice(i, 1);
+  },
+
+  async listLots(productId) {
+    return productLots.filter((l) => l.product_id === productId);
+  },
+  async addLot(productId, input) {
+    productLots.push({
+      ...input,
+      id: uid(),
+      product_id: productId,
+      coa_file_path: null,
+      coa_url: null,
+    });
+  },
+  async uploadLotCoa(productId, lotId, file) {
+    const lot = productLots.find(
+      (l) => l.id === lotId && l.product_id === productId
+    );
+    if (lot) {
+      lot.coa_file_path = file.fileName;
+      lot.coa_url = `data:${file.mimeType};base64,${file.base64}`;
+    }
   },
 
   async dashboardCounts() {

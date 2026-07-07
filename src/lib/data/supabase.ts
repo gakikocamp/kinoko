@@ -12,7 +12,10 @@ import type {
   DocSnapshot,
   DocType,
   IssuedDocument,
+  Payment,
   Product,
+  ProductLot,
+  StoredFile,
 } from "../types";
 import type { DataRepo, DealWithRefs } from "./repo";
 
@@ -332,6 +335,120 @@ export const supabaseRepo: DataRepo = {
         .insert(rows.map((r) => ({ ...r, deal_id: dealId })));
       if (error) throw new Error(error.message);
     }
+  },
+
+  async listPayments(dealId) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("payments")
+      .select("*")
+      .eq("deal_id", dealId)
+      .order("received_date", { ascending: false });
+    return must(data, error) as Payment[];
+  },
+  async addPayment(dealId, input) {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("payments")
+      .insert({ ...input, deal_id: dealId });
+    if (error) throw new Error(error.message);
+  },
+
+  async listFiles(dealId) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("deal_files")
+      .select("*")
+      .eq("deal_id", dealId)
+      .order("created_at", { ascending: false });
+    const rows = must(data, error) as (StoredFile & { storage_path: string })[];
+    // 非公開バケットのため60秒の署名付きURLで返す(docs/08 §3)
+    return Promise.all(
+      rows.map(async (f) => {
+        const { data: signed } = await supabase.storage
+          .from("attachments")
+          .createSignedUrl(f.storage_path, 60);
+        return { ...f, url: signed?.signedUrl ?? null };
+      })
+    );
+  },
+  async uploadFile(dealId, input) {
+    const supabase = await createClient();
+    const path = `deals/${dealId}/${input.category}/${crypto.randomUUID()}_${input.fileName}`;
+    const { error: upErr } = await supabase.storage
+      .from("attachments")
+      .upload(path, Buffer.from(input.base64, "base64"), {
+        contentType: input.mimeType,
+      });
+    if (upErr) throw new Error(upErr.message);
+    const { error } = await supabase.from("deal_files").insert({
+      deal_id: dealId,
+      category: input.category,
+      file_name: input.fileName,
+      storage_path: path,
+      mime_type: input.mimeType,
+      size_bytes: Math.round(input.base64.length * 0.75),
+    });
+    if (error) throw new Error(error.message);
+  },
+  async deleteFile(dealId, fileId) {
+    const supabase = await createClient();
+    const { data: file } = await supabase
+      .from("deal_files")
+      .select("storage_path")
+      .eq("id", fileId)
+      .eq("deal_id", dealId)
+      .maybeSingle();
+    if (!file) return;
+    await supabase.storage.from("attachments").remove([file.storage_path]);
+    const { error } = await supabase
+      .from("deal_files")
+      .delete()
+      .eq("id", fileId)
+      .eq("deal_id", dealId);
+    if (error) throw new Error(error.message);
+  },
+
+  async listLots(productId) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("product_lots")
+      .select("*")
+      .eq("product_id", productId)
+      .order("created_at", { ascending: false });
+    const rows = must(data, error) as ProductLot[];
+    return Promise.all(
+      rows.map(async (l) => {
+        if (!l.coa_file_path) return { ...l, coa_url: null };
+        const { data: signed } = await supabase.storage
+          .from("attachments")
+          .createSignedUrl(l.coa_file_path, 60);
+        return { ...l, coa_url: signed?.signedUrl ?? null };
+      })
+    );
+  },
+  async addLot(productId, input) {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("product_lots")
+      .insert({ ...input, product_id: productId });
+    if (error) throw new Error(error.message);
+  },
+  async uploadLotCoa(productId, lotId, file) {
+    const supabase = await createClient();
+    const path = `products/${productId}/coa/${crypto.randomUUID()}_${file.fileName}`;
+    const { error: upErr } = await supabase.storage
+      .from("attachments")
+      .upload(path, Buffer.from(file.base64, "base64"), {
+        contentType: file.mimeType,
+      });
+    if (upErr) throw new Error(upErr.message);
+    const { error } = await supabase
+      .from("product_lots")
+      .update({ coa_file_path: path })
+      .eq("id", lotId)
+      .eq("product_id", productId);
+    if (error) throw new Error(error.message);
   },
 
   async dashboardCounts() {

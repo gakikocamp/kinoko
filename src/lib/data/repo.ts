@@ -8,10 +8,14 @@ import type {
   DealItem,
   DealStatus,
   DocType,
+  FileCategory,
   IssuedDocument,
+  Payment,
   PiSnapshot,
   PlSnapshot,
   Product,
+  ProductLot,
+  StoredFile,
 } from "../types";
 
 export type AnySnapshotBase =
@@ -20,6 +24,23 @@ export type AnySnapshotBase =
   | Omit<PlSnapshot, "docNumber">;
 
 export type DealCartonInput = Omit<DealCarton, "id" | "deal_id">;
+
+export type PaymentInput = Omit<Payment, "id" | "deal_id" | "created_at">;
+
+export type UploadInput = {
+  category: FileCategory;
+  fileName: string;
+  mimeType: string;
+  /** ファイル内容(base64)。20MB上限はアクション層で検証 */
+  base64: string;
+};
+
+export type LotInput = {
+  lot_number: string;
+  production_date: string | null;
+  best_before: string | null;
+  notes: string | null;
+};
 
 export type DealWithRefs = Deal & {
   customer: Customer | null;
@@ -93,6 +114,24 @@ export interface DataRepo {
   /** Packing List用カートン明細(全置換で保存) */
   listCartons(dealId: string): Promise<DealCarton[]>;
   saveCartons(dealId: string, rows: DealCartonInput[]): Promise<void>;
+
+  /** 入金記録 */
+  listPayments(dealId: string): Promise<Payment[]>;
+  addPayment(dealId: string, input: PaymentInput): Promise<void>;
+
+  /** 案件ファイル(アップロード・一覧・削除) */
+  listFiles(dealId: string): Promise<StoredFile[]>;
+  uploadFile(dealId: string, input: UploadInput): Promise<void>;
+  deleteFile(dealId: string, fileId: string): Promise<void>;
+
+  /** LOT/COA管理 */
+  listLots(productId: string): Promise<ProductLot[]>;
+  addLot(productId: string, input: LotInput): Promise<void>;
+  uploadLotCoa(
+    productId: string,
+    lotId: string,
+    file: { fileName: string; mimeType: string; base64: string }
+  ): Promise<void>;
 
   dashboardCounts(): Promise<{
     activeDeals: number;

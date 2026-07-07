@@ -6,11 +6,7 @@ import { DocViewer } from "./doc-viewer";
 
 export const dynamic = "force-dynamic";
 
-const DOC_LABEL = {
-  proforma_invoice: "Proforma Invoice",
-  commercial_invoice: "Commercial Invoice",
-  packing_list: "Packing List",
-} as const;
+import { DOC_INFO } from "@/lib/docs-info";
 
 export default async function DocViewPage({
   params,
@@ -30,7 +26,7 @@ export default async function DocViewPage({
           <h1 className="text-2xl font-extrabold text-matcha-900">
             📄 {doc.doc_number}
             <span className="ml-2 text-sm font-bold text-matcha-700/60">
-              {DOC_LABEL[doc.doc_type]}
+              {DOC_INFO[doc.doc_type].ja}
             </span>
           </h1>
           <p className="mt-0.5 text-sm text-matcha-700/60">

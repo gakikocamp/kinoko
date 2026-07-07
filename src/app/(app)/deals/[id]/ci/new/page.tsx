@@ -41,11 +41,11 @@ export default async function NewCiPage({
       <div className="fade-up">
         <p className="text-sm text-matcha-700/50">{deal.deal_no}</p>
         <h1 className="text-2xl font-extrabold text-matcha-900">
-          Commercial Invoice を発行する
+          🛃 通関インボイス(CI)を発行する
         </h1>
         <p className="mt-1 text-sm text-matcha-700/60">
           {deal.customer.company_name} / 合計 {money(deal.total_amount, deal.currency)}
-          — 通関で使う正式なインボイスです
+          — 税関に見せる正式な書類です。発送物に同封します
         </p>
       </div>
 

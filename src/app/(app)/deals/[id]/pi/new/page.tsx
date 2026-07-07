@@ -76,10 +76,10 @@ export default async function NewPiPage({
       <div>
         <p className="text-sm text-matcha-700/50">{deal.deal_no}</p>
         <h1 className="text-2xl font-extrabold text-matcha-900">
-          Proforma Invoice を発行する
+          📄 請求書(PI)を発行する
         </h1>
         <p className="mt-1 text-sm text-matcha-700/60">
-          {deal.customer.company_name} / 合計 {money(deal.total_amount, deal.currency)}
+          {deal.customer.company_name} / 合計 {money(deal.total_amount, deal.currency)} — バイヤーはこの書類を見て前払いの送金をします
         </p>
       </div>
 

@@ -33,7 +33,7 @@ export default async function NewPlPage({
       <div className="fade-up">
         <p className="text-sm text-matcha-700/50">{deal.deal_no}</p>
         <h1 className="text-2xl font-extrabold text-matcha-900">
-          Packing List を発行する
+          📦 梱包リスト(Packing List)を発行する
         </h1>
         <p className="mt-1 text-sm text-matcha-700/60">
           {deal.customer.company_name} — 箱数・重量・寸法の明細です(金額は記載されません)

@@ -12,9 +12,15 @@ import type { DealStatus } from "@/lib/types";
 export function NextActionButton({
   dealId,
   status,
+  paymentsTotal = 0,
+  dealTotal = 0,
+  currency = "USD",
 }: {
   dealId: string;
   status: DealStatus;
+  paymentsTotal?: number;
+  dealTotal?: number;
+  currency?: string;
 }) {
   const [pending, startTransition] = useTransition();
   const [confirming, setConfirming] = useState(false);
@@ -40,6 +46,23 @@ export function NextActionButton({
         </p>
         <p className="mt-1 text-sm text-matcha-800/70">
           この事業は100%前払いが条件です。着金を確認する前に加工・出荷を始めないでください。
+        </p>
+        <p
+          className={`mt-2 rounded-xl px-3 py-2 text-sm font-bold ${
+            paymentsTotal >= dealTotal && dealTotal > 0
+              ? "bg-matcha-100 text-matcha-800"
+              : "bg-white text-matcha-900"
+          }`}
+        >
+          記録済みの入金: {currency}{" "}
+          {paymentsTotal.toLocaleString("en-US", { minimumFractionDigits: currency === "JPY" ? 0 : 2 })}{" "}
+          / {currency}{" "}
+          {dealTotal.toLocaleString("en-US", { minimumFractionDigits: currency === "JPY" ? 0 : 2 })}
+          {paymentsTotal === 0 && (
+            <span className="ml-2 font-normal text-amber-700">
+              — まだ入金が記録されていません。下の「💰 入金の記録」で先に記録するのがおすすめです
+            </span>
+          )}
         </p>
         <div className="mt-4 flex gap-3">
           <button onClick={advance} disabled={pending} className="btn-primary">
