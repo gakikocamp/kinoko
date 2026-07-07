@@ -15,13 +15,19 @@ export default async function CustomersPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold text-matcha-900">👤 顧客</h1>
-        <Link
-          href="/customers/new"
-          className="btn-primary"
-        >
-          + 顧客を登録する
-        </Link>
+        <h1 className="text-2xl font-extrabold text-matcha-900">🤝 顧客</h1>
+        <div className="flex gap-2">
+          <a
+            href="/export/customers"
+            className="btn-secondary"
+            title="ExcelやGoogleスプレッドシートでそのまま開けます"
+          >
+            📊 表計算に書き出す
+          </a>
+          <Link href="/customers/new" className="btn-primary">
+            ✚ 顧客を登録する
+          </Link>
+        </div>
       </div>
 
       <div className="card overflow-hidden">

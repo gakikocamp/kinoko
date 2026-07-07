@@ -22,9 +22,21 @@ export default async function DealsPage({
     <div className="mx-auto max-w-5xl space-y-6">
       <div className="fade-up flex items-center justify-between">
         <h1 className="text-2xl font-extrabold text-matcha-900">📋 案件</h1>
-        <Link href="/deals/new" className="btn-primary">
-          ✚ 案件を作成する
-        </Link>
+        <div className="flex gap-2">
+          <a
+            href="/export/deals"
+            className="btn-secondary"
+            title="ExcelやGoogleスプレッドシートでそのまま開けます"
+          >
+            📊 表計算に書き出す
+          </a>
+          <a href="/export/payments" className="btn-secondary" title="入金の一覧をCSVで書き出します">
+            💰 入金一覧を書き出す
+          </a>
+          <Link href="/deals/new" className="btn-primary">
+            ✚ 案件を作成する
+          </Link>
+        </div>
       </div>
 
       <div className="fade-up-1 flex flex-wrap gap-1.5">
