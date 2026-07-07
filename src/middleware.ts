@@ -6,6 +6,15 @@ import { updateSession } from "@/lib/supabase/proxy-session";
 // 意図的に middleware.ts(Edge)を使用している(ビルド時の非推奨警告は既知)。
 // OpenNext が Node ミドルウェアに対応したら proxy.ts へ移行する。
 export async function middleware(request: NextRequest) {
+  // デモモード(サンプルデータ)では認証をスキップ。本番では必ず未設定にする
+  if (process.env.DEMO_MODE === "1") {
+    if (request.nextUrl.pathname.startsWith("/login")) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      return Response.redirect(url);
+    }
+    return;
+  }
   return await updateSession(request);
 }
 

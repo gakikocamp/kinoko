@@ -6,7 +6,18 @@ MATCHA NINJA / WAGYUNINJA の海外抹茶輸出業務(商談〜見積〜PI〜入
 - 技術スタック: Next.js (App Router) + Supabase + Cloudflare Workers ([@opennextjs/cloudflare](https://opennext.js.org/cloudflare))
 - 現在の実装状況: **Phase 0(基盤)** — 認証・DBスキーマ・デプロイパイプラインまで完成
 
-## 開発環境での起動
+## まず動かして見る(デモモード)
+
+Supabaseなしでサンプルデータ入りで起動できます。ログイン不要で全画面とPI発行(PDF)を試せます。
+
+```bash
+npm install
+npm run demo                 # http://localhost:3000
+```
+
+デモモードは `DEMO_MODE=1` のときだけ有効で、データはインメモリ(再起動で消えます)。本番デプロイでは使いません。
+
+## 開発環境での起動(Supabase接続)
 
 ```bash
 npm install
