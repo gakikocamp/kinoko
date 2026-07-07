@@ -74,11 +74,11 @@ export default async function NewPiPage({
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <p className="text-sm text-gray-400">{deal.deal_no}</p>
-        <h1 className="text-2xl font-bold text-green-900">
+        <p className="text-sm text-matcha-700/50">{deal.deal_no}</p>
+        <h1 className="text-2xl font-extrabold text-matcha-900">
           Proforma Invoice を発行する
         </h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-matcha-700/60">
           {deal.customer.company_name} / 合計 {money(deal.total_amount, deal.currency)}
         </p>
       </div>

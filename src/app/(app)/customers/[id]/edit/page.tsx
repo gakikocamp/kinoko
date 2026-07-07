@@ -21,7 +21,7 @@ export default async function EditCustomerPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-green-900">
+      <h1 className="text-2xl font-extrabold text-matcha-900">
         {customer.company_name} を編集する
       </h1>
       <CustomerForm

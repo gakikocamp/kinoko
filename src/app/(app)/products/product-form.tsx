@@ -1,8 +1,7 @@
 import { InternalOnlyBadge } from "@/components/badges";
 import type { Product } from "@/lib/types";
 
-const input =
-  "w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-600 focus:outline-none";
+const input = "input";
 
 function Field({
   label,
@@ -17,12 +16,12 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700">
+      <label className="block text-sm font-bold text-matcha-800">
         {label}
         {requiredMark && <span className="ml-0.5 text-red-500">*</span>}
       </label>
       <div className="mt-1">{children}</div>
-      {hint && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-matcha-700/50">{hint}</p>}
     </div>
   );
 }
@@ -87,7 +86,7 @@ export function ProductForm({
           placeholder={'例:\nMATCHA NINJA "Imperial Ceremonial"\n2026 Spring 1st Flush Yame Matcha\n100g silver aluminum pouch'} />
       </Field>
 
-      <div className="rounded-xl border border-gray-300 bg-gray-50 p-4">
+      <div className="card border-dashed bg-cream-50 p-5">
         <p className="mb-3 text-xs font-semibold text-gray-600">
           <InternalOnlyBadge /> ここから下は社内専用。PDFには一切出ません
         </p>
@@ -106,11 +105,11 @@ export function ProductForm({
       <div className="flex gap-3 border-t border-gray-100 pt-5">
         <button
           type="submit"
-          className="rounded-md bg-green-700 px-5 py-2 text-sm font-semibold text-white hover:bg-green-800"
+          className="btn-primary"
         >
           {submitLabel}
         </button>
-        <p className="self-center text-xs text-gray-400">
+        <p className="self-center text-xs text-matcha-700/50">
           間違えてもあとから編集できます
         </p>
       </div>

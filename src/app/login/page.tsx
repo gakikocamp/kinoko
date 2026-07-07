@@ -34,18 +34,23 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-green-50 px-4">
-      <div className="w-full max-w-sm rounded-xl bg-white p-8 shadow">
-        <h1 className="text-xl font-bold text-green-900">
-          抹茶輸出管理システム
-        </h1>
-        <p className="mt-1 text-sm text-gray-500">
-          MATCHA NINJA / WAGYUNINJA 社内ツール
-        </p>
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-matcha-900 via-matcha-800 to-matcha-950 px-4">
+      <div className="fade-up w-full max-w-sm rounded-3xl bg-white p-8 shadow-2xl">
+        <div className="flex flex-col items-center text-center">
+          <span className="wiggle flex h-16 w-16 items-center justify-center rounded-full bg-matcha-100 text-4xl">
+            🍵
+          </span>
+          <h1 className="mt-3 text-xl font-extrabold text-matcha-900">
+            抹茶輸出管理システム
+          </h1>
+          <p className="mt-1 text-xs text-matcha-700/60">
+            MATCHA NINJA / WAGYUNINJA 社内ツール
+          </p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-7 space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium">
+            <label htmlFor="email" className="block text-sm font-bold text-matcha-800">
               メールアドレス
             </label>
             <input
@@ -55,11 +60,11 @@ export default function LoginPage() {
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-600 focus:outline-none"
+              className="input mt-1"
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium">
+            <label htmlFor="password" className="block text-sm font-bold text-matcha-800">
               パスワード
             </label>
             <input
@@ -69,12 +74,12 @@ export default function LoginPage() {
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-600 focus:outline-none"
+              className="input mt-1"
             />
           </div>
 
           {error && (
-            <p role="alert" className="text-sm text-red-600">
+            <p role="alert" className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-600">
               {error}
             </p>
           )}
@@ -82,14 +87,16 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-md bg-green-700 py-2 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-50"
+            className="btn-primary w-full justify-center !py-3"
           >
             {loading ? "ログイン中…" : "ログインする"}
           </button>
         </form>
 
-        <p className="mt-4 text-xs text-gray-400">
-          アカウントは管理者の招待制です。ログインできない場合は管理者に連絡してください。
+        <p className="mt-5 text-center text-xs text-matcha-700/50">
+          アカウントは管理者の招待制です。
+          <br />
+          ログインできない場合は管理者に連絡してください。
         </p>
       </div>
     </main>

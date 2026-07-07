@@ -6,8 +6,7 @@ import { CountrySelect } from "@/components/country-select";
 import { money } from "@/lib/format";
 import type { Country, Customer, Product } from "@/lib/types";
 
-const input =
-  "w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-600 focus:outline-none";
+const input = "input";
 
 function Field({
   label,
@@ -22,12 +21,12 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700">
+      <label className="block text-sm font-bold text-matcha-800">
         {label}
         {requiredMark && <span className="ml-0.5 text-red-500">*</span>}
       </label>
       <div className="mt-1">{children}</div>
-      {hint && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-matcha-700/50">{hint}</p>}
     </div>
   );
 }
@@ -230,8 +229,8 @@ export function DealForm({
         </Field>
       </section>
 
-      <section className="rounded-xl border border-green-200 bg-green-50 p-4">
-        <h2 className="text-sm font-semibold text-green-900">金額(自動計算)</h2>
+      <section className="card border-2 border-matcha-300 bg-gradient-to-br from-matcha-50 to-cream-50 p-5">
+        <h2 className="font-extrabold text-matcha-900">💰 金額(自動計算)</h2>
         <dl className="mt-2 space-y-1 text-sm">
           <div className="flex justify-between">
             <dt className="text-gray-600">商品金額({quantity || 0} × {money(unitPrice, currency)}</dt>
@@ -249,9 +248,9 @@ export function DealForm({
             <dt className="text-gray-600">送料</dt>
             <dd className="font-medium">{money(shippingFee, currency)}</dd>
           </div>
-          <div className="flex justify-between border-t border-green-200 pt-1 text-base">
-            <dt className="font-semibold text-green-900">合計</dt>
-            <dd className="font-bold text-green-900">{money(total, currency)}</dd>
+          <div className="flex justify-between border-t border-matcha-200 pt-1.5 text-base">
+            <dt className="font-extrabold text-matcha-900">合計</dt>
+            <dd className="font-extrabold text-matcha-900">{money(total, currency)}</dd>
           </div>
         </dl>
       </section>
@@ -265,11 +264,11 @@ export function DealForm({
       <div className="flex gap-3 border-t border-gray-100 pt-5">
         <button
           type="submit"
-          className="rounded-md bg-green-700 px-5 py-2 text-sm font-semibold text-white hover:bg-green-800"
+          className="btn-primary"
         >
           案件を作成する
         </button>
-        <p className="self-center text-xs text-gray-400">
+        <p className="self-center text-xs text-matcha-700/50">
           案件番号(DEAL-)は自動で採番されます
         </p>
       </div>

@@ -3,8 +3,7 @@ import { updateSettingsAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-const input =
-  "w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-600 focus:outline-none";
+const input = "input";
 
 function Field({
   label,
@@ -17,9 +16,9 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700">{label}</label>
+      <label className="block text-sm font-bold text-matcha-800">{label}</label>
       <div className="mt-1">{children}</div>
-      {hint && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-matcha-700/50">{hint}</p>}
     </div>
   );
 }
@@ -36,13 +35,13 @@ export default async function SettingsPage({
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-2xl font-bold text-green-900">⚙️ 設定</h1>
+      <h1 className="text-2xl font-extrabold text-matcha-900">⚙️ 設定</h1>
       {saved && (
-        <p className="rounded-md bg-green-50 px-4 py-2 text-sm text-green-800">
+        <p className="fade-up card border-2 border-matcha-300 bg-matcha-50 px-4 py-2.5 text-sm font-bold text-matcha-800">
           ✅ 保存しました
         </p>
       )}
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-matcha-700/60">
         ここで登録した内容がすべてのPDF(PI / CI / Packing List)のヘッダ・振込先・署名欄に使われます。**英語で入力してください**
       </p>
 
@@ -100,7 +99,7 @@ export default async function SettingsPage({
 
         <button
           type="submit"
-          className="rounded-md bg-green-700 px-5 py-2 text-sm font-semibold text-white hover:bg-green-800"
+          className="btn-primary"
         >
           保存する
         </button>

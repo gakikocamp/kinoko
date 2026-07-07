@@ -19,21 +19,22 @@ export default async function DealsPage({
   const deals = await repo.listDeals(filter);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-green-900">📋 案件</h1>
-        <Link
-          href="/deals/new"
-          className="rounded-md bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800"
-        >
-          + 案件を作成する
+    <div className="mx-auto max-w-5xl space-y-6">
+      <div className="fade-up flex items-center justify-between">
+        <h1 className="text-2xl font-extrabold text-matcha-900">📋 案件</h1>
+        <Link href="/deals/new" className="btn-primary">
+          ✚ 案件を作成する
         </Link>
       </div>
 
-      <div className="flex flex-wrap gap-1.5">
+      <div className="fade-up-1 flex flex-wrap gap-1.5">
         <Link
           href="/deals"
-          className={`rounded-full px-3 py-1 text-xs font-medium ${!filter ? "bg-green-700 text-white" : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"}`}
+          className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
+            !filter
+              ? "bg-matcha-700 text-white shadow"
+              : "border-2 border-cream-300 bg-white text-matcha-700/70 hover:border-matcha-300"
+          }`}
         >
           すべて
         </Link>
@@ -41,56 +42,48 @@ export default async function DealsPage({
           <Link
             key={s.value}
             href={`/deals?status=${s.value}`}
-            className={`rounded-full px-3 py-1 text-xs font-medium ${filter === s.value ? "bg-green-700 text-white" : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"}`}
+            className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
+              filter === s.value
+                ? "bg-matcha-700 text-white shadow"
+                : "border-2 border-cream-300 bg-white text-matcha-700/70 hover:border-matcha-300"
+            }`}
           >
             {s.label}
           </Link>
         ))}
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-left text-xs text-gray-500">
-            <tr>
-              <th className="px-4 py-2 font-medium">案件番号</th>
-              <th className="px-4 py-2 font-medium">顧客</th>
-              <th className="px-4 py-2 font-medium">仕向国</th>
-              <th className="px-4 py-2 font-medium">状態</th>
-              <th className="px-4 py-2 font-medium">合計金額</th>
-              <th className="px-4 py-2 font-medium">出荷予定</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {deals.map((d) => (
-              <tr key={d.id} className="hover:bg-green-50/50">
-                <td className="px-4 py-2.5">
-                  <Link
-                    href={`/deals/${d.id}`}
-                    className="font-medium text-green-800 hover:underline"
-                  >
-                    {d.deal_no}
-                  </Link>
-                </td>
-                <td className="px-4 py-2.5">{d.customer?.company_name}</td>
-                <td className="px-4 py-2.5">
-                  <CountryBadge country={d.country} />
-                </td>
-                <td className="px-4 py-2.5">
-                  <DealStatusBadge status={d.status} />
-                </td>
-                <td className="px-4 py-2.5">{money(d.total_amount, d.currency)}</td>
-                <td className="px-4 py-2.5">{dateJa(d.expected_ship_date)}</td>
-              </tr>
-            ))}
-            {deals.length === 0 && (
-              <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-gray-400">
-                  該当する案件がありません
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      <div className="fade-up-2 space-y-2">
+        {deals.map((d) => (
+          <Link
+            key={d.id}
+            href={`/deals/${d.id}`}
+            className="card card-hover flex items-center gap-4 px-5 py-4"
+          >
+            <span className="w-36 shrink-0 text-xs font-bold text-matcha-600">
+              {d.deal_no}
+            </span>
+            <span className="min-w-0 flex-1 truncate font-bold text-matcha-900">
+              {d.customer?.company_name}
+            </span>
+            <CountryBadge country={d.country} />
+            <DealStatusBadge status={d.status} />
+            <span className="w-32 text-right font-extrabold text-matcha-900">
+              {money(d.total_amount, d.currency)}
+            </span>
+            <span className="w-24 text-right text-xs text-matcha-700/60">
+              🚢 {dateJa(d.expected_ship_date)}
+            </span>
+          </Link>
+        ))}
+        {deals.length === 0 && (
+          <div className="card p-10 text-center">
+            <p className="text-4xl">🔍</p>
+            <p className="mt-3 font-bold text-matcha-800">
+              該当する案件がありません
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

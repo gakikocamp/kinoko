@@ -5,8 +5,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { issuePiAction } from "../../../actions";
 
-const input =
-  "w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-600 focus:outline-none";
+const input = "input";
 
 export function PiIssueForm({
   dealId,
@@ -34,15 +33,15 @@ export function PiIssueForm({
         setError(result.error);
         return;
       }
-      router.push(`/deals/${dealId}/pi/${result.docId}`);
+      router.push(`/deals/${dealId}/pi/${result.docId}?issued=1`);
     });
   }
 
   return (
     <div className="space-y-6">
       {/* Step 1: チェックリスト */}
-      <section className="rounded-xl border border-gray-200 bg-white p-5">
-        <h2 className="text-sm font-semibold text-gray-800">
+      <section className="card p-6">
+        <h2 className="font-extrabold text-matcha-900">
           Step 1. 発行前チェック
         </h2>
         {warnings.length === 0 ? (
@@ -78,8 +77,8 @@ export function PiIssueForm({
       </section>
 
       {/* Step 2: 追加情報 */}
-      <section className="rounded-xl border border-gray-200 bg-white p-5">
-        <h2 className="text-sm font-semibold text-gray-800">
+      <section className="card p-6">
+        <h2 className="font-extrabold text-matcha-900">
           Step 2. この書類の追加情報
         </h2>
         <div className="mt-3 space-y-4">
@@ -114,8 +113,8 @@ export function PiIssueForm({
       </section>
 
       {/* Step 3: 発行 */}
-      <section className="rounded-xl border border-green-200 bg-green-50 p-5">
-        <h2 className="text-sm font-semibold text-green-900">Step 3. 発行</h2>
+      <section className="card border-2 border-matcha-300 bg-gradient-to-br from-matcha-50 to-cream-50 p-6">
+        <h2 className="font-extrabold text-matcha-900">Step 3. 発行</h2>
         <p className="mt-1 text-xs text-gray-600">
           発行するとPI番号が確定し、記載内容が保存されます。発行後は変更できません(修正は改訂版の発行)
         </p>
@@ -127,7 +126,7 @@ export function PiIssueForm({
         <button
           onClick={issue}
           disabled={pending || hasBlocker}
-          className="mt-3 rounded-md bg-green-700 px-6 py-2.5 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-40"
+          className="btn-primary mt-4 !px-7 !py-3 !text-base"
         >
           {pending ? "発行中…" : "PIを発行する(番号を確定)"}
         </button>

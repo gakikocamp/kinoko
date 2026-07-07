@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useMemo } from "react";
 import type { PiSnapshot } from "@/lib/types";
 import { PiDocument } from "@/components/pdf/pi-document";
 
@@ -16,32 +17,72 @@ const PDFDownloadLink = dynamic(
 
 function ViewerLoading() {
   return (
-    <div className="flex h-[70vh] items-center justify-center rounded-xl border border-gray-200 bg-white text-sm text-gray-400">
-      PDFを準備しています…
+    <div className="card flex h-[70vh] items-center justify-center text-sm text-matcha-700/50">
+      🍵 PDFを準備しています…
     </div>
   );
 }
 
+const CONFETTI = ["🎉", "🍵", "✨", "🎊", "💚", "🌿", "✨", "🎉", "🍵", "💰", "✨", "🌿"];
+
 export function PiViewer({
   snapshot,
   docNumber,
+  celebrate = false,
 }: {
   snapshot: PiSnapshot;
   docNumber: string;
+  celebrate?: boolean;
 }) {
   const doc = <PiDocument data={snapshot} />;
+  const confetti = useMemo(
+    () =>
+      CONFETTI.map((emoji, i) => ({
+        emoji,
+        left: `${(i * 8.3 + 4) % 100}%`,
+        delay: `${(i % 6) * 0.18}s`,
+      })),
+    []
+  );
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
+      {celebrate && (
+        <>
+          {confetti.map((c, i) => (
+            <span
+              key={i}
+              className="confetti"
+              style={{ left: c.left, animationDelay: c.delay }}
+            >
+              {c.emoji}
+            </span>
+          ))}
+          <div className="fade-up card border-2 border-matcha-400 bg-gradient-to-r from-matcha-50 to-cream-50 p-5 text-center">
+            <p className="text-lg font-extrabold text-matcha-900">
+              🎉 {docNumber} を発行しました!
+            </p>
+            <p className="mt-1 text-sm text-matcha-800/70">
+              下のボタンでPDFをダウンロードして、バイヤーにメールで送りましょう。入金が来たら案件画面の緑のボタンへ
+            </p>
+          </div>
+        </>
+      )}
+
       <PDFDownloadLink
         document={doc}
         fileName={`${docNumber}.pdf`}
-        className="inline-block rounded-md bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800"
+        className="btn-primary"
       >
         {({ loading }) =>
-          loading ? "PDFを生成中…" : `⬇ ${docNumber}.pdf をダウンロード`
+          loading ? "🍵 PDFを生成中…" : `⬇ ${docNumber}.pdf をダウンロード`
         }
       </PDFDownloadLink>
-      <PDFViewer className="h-[75vh] w-full rounded-xl border border-gray-200" showToolbar>
+
+      <PDFViewer
+        className="h-[75vh] w-full rounded-2xl border border-cream-300 shadow-lg"
+        showToolbar
+      >
         {doc}
       </PDFViewer>
     </div>

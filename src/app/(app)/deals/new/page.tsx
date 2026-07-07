@@ -18,7 +18,7 @@ export default async function NewDealPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-green-900">案件を作成する</h1>
+      <h1 className="text-2xl font-extrabold text-matcha-900">案件を作成する</h1>
       <DealForm
         customers={customers}
         products={products}

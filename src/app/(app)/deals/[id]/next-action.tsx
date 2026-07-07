@@ -34,25 +34,18 @@ export function NextActionButton({
 
   if (confirming && needsPaymentConfirm) {
     return (
-      <div className="rounded-lg border border-amber-300 bg-amber-50 p-4">
-        <p className="text-sm font-medium text-amber-900">
-          ⚠️ 入金の着金を確認しましたか?
+      <div className="card border-2 border-gold-400/60 bg-gradient-to-br from-white to-cream-50 p-5">
+        <p className="font-extrabold text-matcha-900">
+          ⚠️ 入金の着金は確認しましたか?
         </p>
-        <p className="mt-1 text-xs text-amber-800">
-          この事業は100%前払いが条件です。着金確認前に加工・出荷を始めないでください。
+        <p className="mt-1 text-sm text-matcha-800/70">
+          この事業は100%前払いが条件です。着金を確認する前に加工・出荷を始めないでください。
         </p>
-        <div className="mt-3 flex gap-2">
-          <button
-            onClick={advance}
-            disabled={pending}
-            className="rounded-md bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-50"
-          >
-            {pending ? "更新中…" : "着金を確認済み — 進める"}
+        <div className="mt-4 flex gap-3">
+          <button onClick={advance} disabled={pending} className="btn-primary">
+            {pending ? "更新中…" : "💰 着金を確認済み — 進める"}
           </button>
-          <button
-            onClick={() => setConfirming(false)}
-            className="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-          >
+          <button onClick={() => setConfirming(false)} className="btn-secondary">
             まだ確認していない
           </button>
         </div>
@@ -61,16 +54,19 @@ export function NextActionButton({
   }
 
   return (
-    <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-      <p className="text-xs text-gray-500">
-        ▶ 次のアクション(次の状態: {statusLabel(to)})
-      </p>
+    <div className="card flex items-center justify-between gap-4 border-2 border-matcha-300 bg-gradient-to-r from-matcha-50 to-cream-50 p-5">
+      <div>
+        <p className="text-xs font-bold text-matcha-600">▶ 次にやること</p>
+        <p className="mt-0.5 text-sm text-matcha-800/70">
+          このボタンを押すと「{statusLabel(to)}」に進みます
+        </p>
+      </div>
       <button
         onClick={() => (needsPaymentConfirm ? setConfirming(true) : advance())}
         disabled={pending}
-        className="mt-2 rounded-md bg-green-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-50"
+        className="btn-primary shrink-0 !px-7 !py-3 !text-base"
       >
-        {pending ? "更新中…" : label}
+        {pending ? "更新中…" : `${label} →`}
       </button>
     </div>
   );

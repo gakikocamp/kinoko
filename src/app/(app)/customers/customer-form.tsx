@@ -14,18 +14,17 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700">
+      <label className="block text-sm font-bold text-matcha-800">
         {label}
         {requiredMark && <span className="ml-0.5 text-red-500">*</span>}
       </label>
       <div className="mt-1">{children}</div>
-      {hint && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-matcha-700/50">{hint}</p>}
     </div>
   );
 }
 
-const input =
-  "w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-600 focus:outline-none";
+const input = "input";
 
 export function CustomerForm({
   action,
@@ -95,11 +94,11 @@ export function CustomerForm({
       <div className="flex gap-3 border-t border-gray-100 pt-5">
         <button
           type="submit"
-          className="rounded-md bg-green-700 px-5 py-2 text-sm font-semibold text-white hover:bg-green-800"
+          className="btn-primary"
         >
           {submitLabel}
         </button>
-        <p className="self-center text-xs text-gray-400">
+        <p className="self-center text-xs text-matcha-700/50">
           間違えてもあとから編集できます
         </p>
       </div>
