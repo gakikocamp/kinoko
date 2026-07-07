@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "matcha-export-app",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-12-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  }
+  // 本番のシークレット(Supabase URL/キー)はリポジトリに書かない。
+  // ビルド時に NEXT_PUBLIC_* が env にあれば Next.js が埋め込む。
+  // 手順は README.md「デプロイ」参照。
+}
