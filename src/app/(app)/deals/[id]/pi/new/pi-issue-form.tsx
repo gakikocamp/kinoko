@@ -33,7 +33,7 @@ export function PiIssueForm({
         setError(result.error);
         return;
       }
-      router.push(`/deals/${dealId}/pi/${result.docId}?issued=1`);
+      router.push(`/deals/${dealId}/docs/${result.docId}?issued=1`);
     });
   }
 

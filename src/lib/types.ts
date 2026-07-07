@@ -99,17 +99,33 @@ export interface DealItem {
   amount: number;
 }
 
+export type DocType = "proforma_invoice" | "commercial_invoice" | "packing_list";
+
 export interface IssuedDocument {
   id: string;
   deal_id: string;
-  doc_type: "proforma_invoice" | "commercial_invoice" | "packing_list";
+  doc_type: DocType;
   doc_number: string;
   revision: number;
   issue_date: string;
-  data: PiSnapshot;
+  data: DocSnapshot;
   pdf_file_path: string | null;
   status: "issued" | "void";
   created_at: string;
+}
+
+export interface DealCarton {
+  id: string;
+  deal_id: string;
+  carton_range: string | null;
+  cartons_count: number;
+  units_per_carton: number;
+  net_weight_kg: number | null;
+  gross_weight_kg: number | null;
+  length_cm: number | null;
+  width_cm: number | null;
+  height_cm: number | null;
+  sort_order: number;
 }
 
 export interface CompanySettings {
@@ -174,3 +190,50 @@ export interface PiSnapshot {
   notes: string | null;
   signature: { name: string | null };
 }
+
+/** Commercial Invoice スナップショット(docs/03 §2)。銀行情報なし・発送情報あり */
+export interface CiSnapshot
+  extends Omit<PiSnapshot, "docType" | "bank"> {
+  docType: "commercial_invoice";
+  shipping: {
+    reasonForExport: string; // 原則 "Sale"
+    method: string | null;
+    trackingNumber: string | null;
+  };
+}
+
+/** Packing List スナップショット(docs/03 §3)。金額なし・数量/重量のみ */
+export interface PlSnapshot {
+  docType: "packing_list";
+  docNumber: string;
+  revision: number;
+  issueDate: string;
+  refInvoiceNumber: string | null; // 対応するCI番号
+  exporter: { companyName: string; address: string };
+  consignee: {
+    companyName: string;
+    address: string | null;
+    country: string | null;
+  };
+  cartons: {
+    cartonRange: string | null;
+    product: string;
+    packaging: string | null;
+    cartonsCount: number;
+    unitsPerCarton: number;
+    netWeightKg: number | null; // 1箱あたり
+    grossWeightKg: number | null;
+    dimensionsCm: string | null; // "40 x 30 x 25"
+  }[];
+  totals: {
+    cartons: number;
+    units: number;
+    netWeightKg: number;
+    grossWeightKg: number;
+    volumeM3: number | null;
+  };
+  notes: string | null;
+  signature: { name: string | null };
+}
+
+export type DocSnapshot = PiSnapshot | CiSnapshot | PlSnapshot;

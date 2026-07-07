@@ -1,14 +1,25 @@
 import type {
+  CiSnapshot,
   CompanySettings,
   Country,
   Customer,
   Deal,
+  DealCarton,
   DealItem,
   DealStatus,
+  DocType,
   IssuedDocument,
   PiSnapshot,
+  PlSnapshot,
   Product,
 } from "../types";
+
+export type AnySnapshotBase =
+  | Omit<PiSnapshot, "docNumber">
+  | Omit<CiSnapshot, "docNumber">
+  | Omit<PlSnapshot, "docNumber">;
+
+export type DealCartonInput = Omit<DealCarton, "id" | "deal_id">;
 
 export type DealWithRefs = Deal & {
   customer: Customer | null;
@@ -63,11 +74,25 @@ export interface DataRepo {
 
   listDocuments(dealId: string): Promise<IssuedDocument[]>;
   getDocument(id: string): Promise<IssuedDocument | null>;
-  /** PI発行: 採番+スナップショット保存。docNumberはリポジトリ側で確定する */
-  issuePi(
+  /**
+   * 書類発行(PI/CI/PL): 採番+スナップショット保存。docNumberはリポジトリ側で確定。
+   * PI発行時のみ、商談中の案件を pi_issued に進める。
+   */
+  issueDocument(
     dealId: string,
-    snapshotBase: Omit<PiSnapshot, "docNumber">
+    docType: DocType,
+    snapshotBase: AnySnapshotBase
   ): Promise<string>;
+
+  /** 発送情報の更新(CI発行時) */
+  updateDealShipping(
+    id: string,
+    patch: { shipping_method: string | null; tracking_number: string | null }
+  ): Promise<void>;
+
+  /** Packing List用カートン明細(全置換で保存) */
+  listCartons(dealId: string): Promise<DealCarton[]>;
+  saveCartons(dealId: string, rows: DealCartonInput[]): Promise<void>;
 
   dashboardCounts(): Promise<{
     activeDeals: number;

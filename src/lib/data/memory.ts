@@ -8,10 +8,12 @@ import type {
   Country,
   Customer,
   Deal,
+  DealCarton,
   DealItem,
   DealStatus,
+  DocSnapshot,
+  DocType,
   IssuedDocument,
-  PiSnapshot,
   Product,
 } from "../types";
 import type { DataRepo, DealWithRefs } from "./repo";
@@ -215,7 +217,14 @@ const dealItems: DealItem[] = [
 ];
 
 const documents: IssuedDocument[] = [];
+const dealCartons: DealCarton[] = [];
 const seq: Record<string, number> = { CUST: 2, PROD: 2, DEAL: 2, PI: 0, CI: 0, PL: 0 };
+
+const DOC_PREFIX: Record<DocType, string> = {
+  proforma_invoice: "PI",
+  commercial_invoice: "CI",
+  packing_list: "PL",
+};
 
 function nextNo(type: string): string {
   seq[type] = (seq[type] ?? 0) + 1;
@@ -337,13 +346,13 @@ export const memoryRepo: DataRepo = {
   async getDocument(id) {
     return documents.find((x) => x.id === id) ?? null;
   },
-  async issuePi(dealId, snapshotBase) {
-    const docNumber = nextNo("PI");
-    const snapshot: PiSnapshot = { ...snapshotBase, docNumber };
+  async issueDocument(dealId, docType, snapshotBase) {
+    const docNumber = nextNo(DOC_PREFIX[docType]);
+    const snapshot = { ...snapshotBase, docNumber } as DocSnapshot;
     const doc: IssuedDocument = {
       id: uid(),
       deal_id: dealId,
-      doc_type: "proforma_invoice",
+      doc_type: docType,
       doc_number: docNumber,
       revision: 0,
       issue_date: today(),
@@ -353,11 +362,30 @@ export const memoryRepo: DataRepo = {
       created_at: now(),
     };
     documents.push(doc);
-    const d = deals.find((x) => x.id === dealId);
-    if (d && (d.status === "inquiry" || d.status === "sample_sent" || d.status === "quotation_sent")) {
-      d.status = "pi_issued";
+    if (docType === "proforma_invoice") {
+      const d = deals.find((x) => x.id === dealId);
+      if (d && ["inquiry", "sample_sent", "quotation_sent"].includes(d.status)) {
+        d.status = "pi_issued";
+      }
     }
     return doc.id;
+  },
+
+  async updateDealShipping(id, patch) {
+    const d = deals.find((x) => x.id === id);
+    if (d) Object.assign(d, patch);
+  },
+
+  async listCartons(dealId) {
+    return dealCartons
+      .filter((c) => c.deal_id === dealId)
+      .sort((a, b) => a.sort_order - b.sort_order);
+  },
+  async saveCartons(dealId, rows) {
+    for (let i = dealCartons.length - 1; i >= 0; i--) {
+      if (dealCartons[i].deal_id === dealId) dealCartons.splice(i, 1);
+    }
+    rows.forEach((r) => dealCartons.push({ ...r, id: uid(), deal_id: dealId }));
   },
 
   async dashboardCounts() {

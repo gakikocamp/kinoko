@@ -2,11 +2,17 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { repo } from "@/lib/data";
 import { dateJa } from "@/lib/format";
-import { PiViewer } from "./pi-viewer";
+import { DocViewer } from "./doc-viewer";
 
 export const dynamic = "force-dynamic";
 
-export default async function PiViewPage({
+const DOC_LABEL = {
+  proforma_invoice: "Proforma Invoice",
+  commercial_invoice: "Commercial Invoice",
+  packing_list: "Packing List",
+} as const;
+
+export default async function DocViewPage({
   params,
   searchParams,
 }: {
@@ -23,6 +29,9 @@ export default async function PiViewPage({
         <div>
           <h1 className="text-2xl font-extrabold text-matcha-900">
             📄 {doc.doc_number}
+            <span className="ml-2 text-sm font-bold text-matcha-700/60">
+              {DOC_LABEL[doc.doc_type]}
+            </span>
           </h1>
           <p className="mt-0.5 text-sm text-matcha-700/60">
             発行日 {dateJa(doc.issue_date)} — この書類は発行済みのため変更できません
@@ -32,7 +41,7 @@ export default async function PiViewPage({
           ← 案件に戻る
         </Link>
       </div>
-      <PiViewer
+      <DocViewer
         snapshot={doc.data}
         docNumber={doc.doc_number}
         celebrate={issued === "1"}

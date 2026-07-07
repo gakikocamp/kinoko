@@ -7,12 +7,20 @@ import type {
   CompanySettings,
   Country,
   Customer,
+  DealCarton,
   DealStatus,
+  DocSnapshot,
+  DocType,
   IssuedDocument,
-  PiSnapshot,
   Product,
 } from "../types";
 import type { DataRepo, DealWithRefs } from "./repo";
+
+const DOC_PREFIX: Record<DocType, string> = {
+  proforma_invoice: "PI",
+  commercial_invoice: "CI",
+  packing_list: "PL",
+};
 
 function must<T>(data: T | null, error: { message: string } | null): T {
   if (error) throw new Error(error.message);
@@ -255,19 +263,19 @@ export const supabaseRepo: DataRepo = {
       .maybeSingle();
     return (data as IssuedDocument) ?? null;
   },
-  async issuePi(dealId, snapshotBase) {
+  async issueDocument(dealId, docType, snapshotBase) {
     const supabase = await createClient();
     const { data: no, error: seqErr } = await supabase.rpc("next_doc_number", {
-      p_type: "PI",
+      p_type: DOC_PREFIX[docType],
     });
     if (seqErr) throw new Error(seqErr.message);
 
-    const snapshot: PiSnapshot = { ...snapshotBase, docNumber: no as string };
+    const snapshot = { ...snapshotBase, docNumber: no as string } as DocSnapshot;
     const { data, error } = await supabase
       .from("documents")
       .insert({
         deal_id: dealId,
-        doc_type: "proforma_invoice",
+        doc_type: docType,
         doc_number: no,
         issue_date: snapshot.issueDate,
         data: snapshot,
@@ -276,19 +284,54 @@ export const supabaseRepo: DataRepo = {
       .single();
     const docId = must(data, error).id as string;
 
-    // 商談中ステータスの案件は pi_issued へ進める
-    const { data: deal } = await supabase
-      .from("deals")
-      .select("status")
-      .eq("id", dealId)
-      .single();
-    if (
-      deal &&
-      ["inquiry", "sample_sent", "quotation_sent"].includes(deal.status)
-    ) {
-      await this.updateDealStatus(dealId, "pi_issued");
+    // PI発行時のみ、商談中ステータスの案件を pi_issued へ進める
+    if (docType === "proforma_invoice") {
+      const { data: deal } = await supabase
+        .from("deals")
+        .select("status")
+        .eq("id", dealId)
+        .single();
+      if (
+        deal &&
+        ["inquiry", "sample_sent", "quotation_sent"].includes(deal.status)
+      ) {
+        await this.updateDealStatus(dealId, "pi_issued");
+      }
     }
     return docId;
+  },
+
+  async updateDealShipping(id, patch) {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("deals")
+      .update({ ...patch, updated_at: new Date().toISOString() })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  },
+
+  async listCartons(dealId) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("deal_cartons")
+      .select("*")
+      .eq("deal_id", dealId)
+      .order("sort_order");
+    return must(data, error) as DealCarton[];
+  },
+  async saveCartons(dealId, rows) {
+    const supabase = await createClient();
+    const { error: delErr } = await supabase
+      .from("deal_cartons")
+      .delete()
+      .eq("deal_id", dealId);
+    if (delErr) throw new Error(delErr.message);
+    if (rows.length > 0) {
+      const { error } = await supabase
+        .from("deal_cartons")
+        .insert(rows.map((r) => ({ ...r, deal_id: dealId })));
+      if (error) throw new Error(error.message);
+    }
   },
 
   async dashboardCounts() {

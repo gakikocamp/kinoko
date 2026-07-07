@@ -2,8 +2,10 @@
 
 import dynamic from "next/dynamic";
 import { useMemo } from "react";
-import type { PiSnapshot } from "@/lib/types";
+import type { DocSnapshot } from "@/lib/types";
 import { PiDocument } from "@/components/pdf/pi-document";
+import { CiDocument } from "@/components/pdf/ci-document";
+import { PlDocument } from "@/components/pdf/pl-document";
 
 // @react-pdf/renderer はブラウザ専用のためSSRを無効化して読み込む
 const PDFViewer = dynamic(
@@ -25,16 +27,36 @@ function ViewerLoading() {
 
 const CONFETTI = ["🎉", "🍵", "✨", "🎊", "💚", "🌿", "✨", "🎉", "🍵", "💰", "✨", "🌿"];
 
-export function PiViewer({
+const NEXT_HINT: Record<DocSnapshot["docType"], string> = {
+  proforma_invoice:
+    "下のボタンでPDFをダウンロードして、バイヤーにメールで送りましょう。入金が来たら案件画面の緑のボタンへ",
+  commercial_invoice:
+    "CIは発送物に同封+フォワーダー/クーリエへ提出します。続けてPacking Listも発行しましょう",
+  packing_list:
+    "PLは発送物に同封します。CI・PLが揃ったら案件画面で「出荷済みにする」へ進みましょう",
+};
+
+function renderDoc(snapshot: DocSnapshot) {
+  switch (snapshot.docType) {
+    case "proforma_invoice":
+      return <PiDocument data={snapshot} />;
+    case "commercial_invoice":
+      return <CiDocument data={snapshot} />;
+    case "packing_list":
+      return <PlDocument data={snapshot} />;
+  }
+}
+
+export function DocViewer({
   snapshot,
   docNumber,
   celebrate = false,
 }: {
-  snapshot: PiSnapshot;
+  snapshot: DocSnapshot;
   docNumber: string;
   celebrate?: boolean;
 }) {
-  const doc = <PiDocument data={snapshot} />;
+  const doc = renderDoc(snapshot);
   const confetti = useMemo(
     () =>
       CONFETTI.map((emoji, i) => ({
@@ -63,7 +85,7 @@ export function PiViewer({
               🎉 {docNumber} を発行しました!
             </p>
             <p className="mt-1 text-sm text-matcha-800/70">
-              下のボタンでPDFをダウンロードして、バイヤーにメールで送りましょう。入金が来たら案件画面の緑のボタンへ
+              {NEXT_HINT[snapshot.docType]}
             </p>
           </div>
         </>

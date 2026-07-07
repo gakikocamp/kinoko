@@ -10,6 +10,12 @@ export const dynamic = "force-dynamic";
 
 const STAGE_ICONS = ["💬", "📄", "💰", "📦", "✅"];
 
+const DOC_TYPE_LABEL = {
+  proforma_invoice: "Proforma Invoice",
+  commercial_invoice: "Commercial Invoice",
+  packing_list: "Packing List",
+} as const;
+
 export default async function DealDetailPage({
   params,
 }: {
@@ -99,29 +105,31 @@ export default async function DealDetailPage({
         <NextActionButton dealId={deal.id} status={deal.status} />
       </div>
 
-      {/* 書類 */}
+      {/* 書類(PI / CI / PL) */}
       <section className="fade-up-2 card p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="font-extrabold text-matcha-900">
-              📄 書類(Proforma Invoice)
-            </h2>
-            <p className="mt-0.5 text-xs text-matcha-700/60">
-              発行済みの書類は変更できません。修正したいときは案件を直してもう一度発行します
-            </p>
-          </div>
-          {canIssuePi ? (
-            <Link href={`/deals/${deal.id}/pi/new`} className="btn-primary shrink-0">
-              📄 PIを発行する
+        <h2 className="font-extrabold text-matcha-900">📄 書類</h2>
+        <p className="mt-0.5 text-xs text-matcha-700/60">
+          発行済みの書類は変更できません。修正したいときは案件を直してもう一度発行します
+        </p>
+        {canIssuePi ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Link href={`/deals/${deal.id}/pi/new`} className="btn-primary">
+              📄 PIを発行(前払い請求)
             </Link>
-          ) : (
-            <span className="rounded-full bg-cream-200 px-4 py-2 text-xs font-bold text-matcha-700/70">
-              {deal.country?.status === "unverified"
-                ? "⚪ 輸出条件が未確認のため発行できません"
-                : "🔴 対応不可の国のため発行できません"}
-            </span>
-          )}
-        </div>
+            <Link href={`/deals/${deal.id}/ci/new`} className="btn-secondary">
+              🛃 CIを発行(通関用・出荷時)
+            </Link>
+            <Link href={`/deals/${deal.id}/pl/new`} className="btn-secondary">
+              📦 Packing Listを発行(出荷時)
+            </Link>
+          </div>
+        ) : (
+          <p className="mt-3 rounded-full bg-cream-200 px-4 py-2 text-xs font-bold text-matcha-700/70">
+            {deal.country?.status === "unverified"
+              ? "⚪ 輸出条件が未確認のため書類を発行できません"
+              : "🔴 対応不可の国のため書類を発行できません"}
+          </p>
+        )}
         {documents.length > 0 && (
           <ul className="mt-4 space-y-2">
             {documents.map((doc) => (
@@ -134,11 +142,11 @@ export default async function DealDetailPage({
                     {doc.doc_number}
                   </span>
                   <span className="ml-2 text-matcha-700/60">
-                    発行日 {dateJa(doc.issue_date)}
+                    {DOC_TYPE_LABEL[doc.doc_type]} — 発行日 {dateJa(doc.issue_date)}
                   </span>
                 </span>
                 <Link
-                  href={`/deals/${deal.id}/pi/${doc.id}`}
+                  href={`/deals/${deal.id}/docs/${doc.id}`}
                   className="btn-secondary"
                 >
                   PDFを見る・ダウンロード
