@@ -38,6 +38,8 @@ npm run dev                  # http://localhost:3000
    ```
 3. Authentication → 設定: サインアップを無効化(招待制のみ)、パスワード最小12文字、漏えいパスワードチェックを有効化
 4. Authentication → Users → 「Invite user」で管理者アカウントを作成
+   - **最初に登録した1人が自動で管理者(admin)になります**
+   - 2人目以降は「承認待ち(pending)」となり、管理者が承認するまで**何も見えません**(サインアップ無効化を忘れても第三者はデータにアクセス不可)。承認は当面 Supabase ダッシュボード → Table Editor → `profiles` で `role` を `staff` 等に変更(ユーザー管理UIは将来追加)
 5. 本番運用開始時: Proプランに変更し PITR バックアップを有効化(docs/08_security.md §4)
 
 ### 2. Cloudflare

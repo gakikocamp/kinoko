@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-export function LogoutButton() {
+export function LogoutButton({ className }: { className?: string }) {
   const router = useRouter();
 
   async function handleLogout() {
@@ -16,7 +16,7 @@ export function LogoutButton() {
   return (
     <button
       onClick={handleLogout}
-      className="btn-secondary w-full justify-center !border-white/20 !bg-white/10 !text-matcha-100 hover:!bg-white/20"
+      className={`btn-secondary justify-center ${className ?? ""}`}
     >
       ログアウト
     </button>

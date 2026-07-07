@@ -17,6 +17,33 @@ export default async function AppLayout({
     } = await supabase.auth.getUser();
     if (!user) redirect("/login");
     userEmail = user.email ?? "";
+
+    // 承認待ち(pending)ユーザーはデータに一切アクセスできない(RLS)ため、
+    // 案内画面だけを表示する
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (!profile || profile.role === "pending") {
+      return (
+        <main className="flex min-h-screen items-center justify-center bg-cream-100 px-4">
+          <div className="card max-w-md p-8 text-center">
+            <p className="text-4xl">⏳</p>
+            <h1 className="mt-3 text-lg font-extrabold text-matcha-900">
+              アカウントは承認待ちです
+            </h1>
+            <p className="mt-2 text-sm text-matcha-700/70">
+              管理者があなたのアカウントを承認すると使えるようになります。
+              管理者に連絡してください。({userEmail})
+            </p>
+            <div className="mt-5">
+              <LogoutButton />
+            </div>
+          </div>
+        </main>
+      );
+    }
   }
 
   return (
@@ -42,7 +69,7 @@ export default async function AppLayout({
               🧪 デモモード
             </p>
           ) : (
-            <LogoutButton />
+            <LogoutButton className="w-full !border-white/20 !bg-white/10 !text-matcha-100 hover:!bg-white/20" />
           )}
         </div>
       </aside>

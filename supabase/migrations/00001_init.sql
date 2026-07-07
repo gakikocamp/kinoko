@@ -9,22 +9,58 @@
 create table profiles (
   id          uuid primary key references auth.users (id) on delete cascade,
   full_name   text not null default '',
-  role        text not null default 'admin'
-              check (role in ('admin', 'staff', 'viewer')),
+  role        text not null default 'pending'
+              check (role in ('admin', 'staff', 'viewer', 'pending')),
   created_at  timestamptz not null default now()
 );
 
--- auth.users 作成時に profiles を自動作成
+-- auth.users 作成時に profiles を自動作成。
+-- ★防御: 最初の1人だけが自動で admin。2人目以降は 'pending'(何も見えない)。
+--   万一Supabaseのサインアップ無効化を忘れて第三者が登録しても、
+--   管理者が昇格させるまで一切のデータにアクセスできない(is_member() 参照)。
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
 security definer set search_path = public
 as $$
+declare
+  v_role text;
 begin
-  insert into public.profiles (id, full_name)
-  values (new.id, coalesce(new.raw_user_meta_data ->> 'full_name', ''));
+  select case when count(*) = 0 then 'admin' else 'pending' end
+    into v_role
+  from public.profiles;
+
+  insert into public.profiles (id, full_name, role)
+  values (new.id, coalesce(new.raw_user_meta_data ->> 'full_name', ''), v_role);
   return new;
 end;
+$$;
+
+-- adminか(security definerによりRLSを介さず判定 = profilesポリシーの再帰を回避)
+create or replace function public.is_admin()
+returns boolean
+language sql
+stable
+security definer set search_path = public
+as $$
+  select exists (
+    select 1 from profiles
+    where id = auth.uid() and role = 'admin'
+  );
+$$;
+
+-- 承認済みメンバーか(RLSの基準)。pending は false
+create or replace function public.is_member()
+returns boolean
+language sql
+stable
+security definer set search_path = public
+as $$
+  select exists (
+    select 1 from profiles
+    where id = auth.uid()
+      and role in ('admin', 'staff', 'viewer')
+  );
 $$;
 
 create trigger on_auth_user_created
@@ -343,30 +379,42 @@ begin
   end loop;
 end $$;
 
--- 認証済みユーザーへの全操作許可(audit_logs 以外)
+-- 承認済みメンバー(is_member)への全操作許可(profiles / audit_logs 以外)。
+-- 'pending' のユーザーは認証済みでも一切アクセス不可(防御の多層化)。
 do $$
 declare
   t text;
 begin
   foreach t in array array[
-    'profiles', 'company_settings', 'destination_countries', 'customers',
+    'company_settings', 'destination_countries', 'customers',
     'products', 'product_lots', 'deals', 'deal_items', 'deal_status_history',
     'deal_processing_costs', 'deal_cartons', 'deal_compliance_checks',
     'payments', 'documents', 'deal_files', 'number_sequences'
   ]
   loop
     execute format(
-      'create policy "authenticated_all" on %I for all to authenticated using (true) with check (true)',
+      'create policy "member_all" on %I for all to authenticated using (public.is_member()) with check (public.is_member())',
       t
     );
   end loop;
 end $$;
 
+-- profiles: 自分の行は誰でも読める(承認待ち画面の表示に必要)。
+-- 他人の行はメンバーのみ。書き換えはadminのみ(将来のユーザー管理UI用)
+create policy "profiles_select_own" on profiles
+  for select to authenticated using (id = auth.uid());
+create policy "profiles_select_member" on profiles
+  for select to authenticated using (public.is_member());
+create policy "profiles_admin_update" on profiles
+  for update to authenticated
+  using (public.is_admin())
+  with check (public.is_admin());
+
 -- 監査ログは INSERT と SELECT のみ(UPDATE/DELETE 不可 = 改ざん防止)
 create policy "audit_insert" on audit_logs
-  for insert to authenticated with check (true);
+  for insert to authenticated with check (public.is_member());
 create policy "audit_select" on audit_logs
-  for select to authenticated using (true);
+  for select to authenticated using (public.is_member());
 
 -- ============================================================
 -- Storage バケット(非公開・§02 / §08)
@@ -376,7 +424,7 @@ values ('attachments', 'attachments', false),
        ('documents', 'documents', false)
 on conflict (id) do nothing;
 
-create policy "authenticated_storage_all" on storage.objects
+create policy "member_storage_all" on storage.objects
   for all to authenticated
-  using (bucket_id in ('attachments', 'documents'))
-  with check (bucket_id in ('attachments', 'documents'));
+  using (bucket_id in ('attachments', 'documents') and public.is_member())
+  with check (bucket_id in ('attachments', 'documents') and public.is_member());
