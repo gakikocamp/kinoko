@@ -21,7 +21,7 @@ Milestone 1 に含むもの:
 
 | Phase | 内容 | 目安 |
 |---|---|---|
-| **0. 基盤** | Next.js(App Router/TS)+Tailwind+shadcn/ui 雛形、Supabaseプロジェクト作成、Auth+MFA+middleware、DBマイグレーション一式(§02のDDL全部+国マスタシード投入)、監査ログ基盤、Vercelデプロイパイプライン | 3〜4日 |
+| **0. 基盤** | Next.js(App Router/TS)+Tailwind+shadcn/ui 雛形、Supabaseプロジェクト作成、Auth+MFA+middleware、DBマイグレーション一式(§02のDDL全部+国マスタシード投入)、監査ログ基盤、Cloudflare Workersデプロイパイプライン(@opennextjs/cloudflare+GitHub Actions — §09) | 3〜4日 |
 | **1. マスタ** | 設定画面 / 顧客CRUD / 商品CRUD / 国マスタ画面(可否バッジ・編集)、`next_doc_number()` による採番、一覧・検索 | 4〜6日 |
 | **2. 案件** | 案件CRUD、ステータス遷移+履歴、明細・金額計算、加工費(顧客向け+社内原価タブ)、国別ブロック/警告 | 4〜6日 |
 | **3. PI発行** | 発行フォーム(案件から初期値展開→編集)、`@react-pdf/renderer` テンプレート、プレビュー、発行確定(採番+スナップショット+Storage保存)、書類一覧 | 4〜6日 |

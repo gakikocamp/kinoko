@@ -6,7 +6,7 @@
 |---|---|
 | 用紙 | A4縦、余白 15mm |
 | 言語 | 英語のみ(貿易書類のため。日本語フォント埋め込みは不要だが、住所等で日本語を使う場合に備え Noto Sans JP を埋め込み可能にしておく) |
-| 生成 | `@react-pdf/renderer` — 帳票ごとにReactコンポーネント(`PiDocument` / `CiDocument` / `PlDocument`)を定義 |
+| 生成 | `@react-pdf/renderer` — 帳票ごとにReactコンポーネント(`PiDocument` / `CiDocument` / `PlDocument`)を定義。**PDF化はブラウザ側で実行**(採番・スナップショット確定はサーバー。Cloudflare Workers のサイズ/CPU制限回避のため — §09-3.1) |
 | データ入力 | **`documents.data`(スナップショットJSON)のみを入力とする。** DBの products / deals を直接参照しない。→ 社内原価(`cost_price`, `internal_notes`, `deal_processing_costs`)は型レベルでPDF入力に存在しないため、混入事故が構造的に起きない |
 | 番号 | 発行確定時に `next_doc_number()` で採番。改訂時は同番号+ `Rev.1` 表記 |
 | フッター | ページ番号 (`Page 1 of 2`)、書類番号 |

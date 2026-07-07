@@ -16,6 +16,7 @@
 | [06_uiux_design.md](./06_uiux_design.md) | UI/UX設計(非エンジニアが迷わず使える画面設計) |
 | [07_country_compliance.md](./07_country_compliance.md) | 仕向国コンプライアンス(対応可否の国別管理) |
 | [08_security.md](./08_security.md) | セキュリティ設計(認証・認可・監査・運用) |
+| [09_deployment.md](./09_deployment.md) | デプロイ設計(Cloudflare Workers + Access + Supabase) |
 
 ## 技術スタック(結論)
 
@@ -27,9 +28,9 @@
 | DB | **Supabase (PostgreSQL)** | 認証・DB・ファイルストレージが1サービスで揃う。RLSで将来の権限分離にも対応 |
 | 認証 | **Supabase Auth** (メール+パスワード) | MVPは管理者1名。招待制でスタッフ追加可能 |
 | ファイル保存 | **Supabase Storage** | 案件ごとのファイル保管。Google Drive連携は将来フェーズ(§04参照) |
-| PDF生成 | **@react-pdf/renderer** | Reactコンポーネントとして帳票を定義。Puppeteer不要でVercelのサーバーレス環境で安定動作 |
+| PDF生成 | **@react-pdf/renderer(ブラウザ側で生成)** | Reactコンポーネントとして帳票を定義。真実源はサーバー側スナップショット、PDF化はクライアントで実行(§09-3.1) |
 | UI | **Tailwind CSS + shadcn/ui** | 社内ツールに十分な品質のUIを最速で構築 |
-| ホスティング | **Vercel** | Next.jsと相性最良。社内数名なら無料〜低コスト |
+| ホスティング | **Cloudflare Workers**(@opennextjs/cloudflare) | ユーザー指定。Cloudflare Access(Zero Trust)による入口防御も併用(§09) |
 
 ### 「もっと簡単な構成」を検討した結果
 
