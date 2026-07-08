@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useMemo } from "react";
 import type { DocSnapshot } from "@/lib/types";
 import { PiDocument } from "@/components/pdf/pi-document";
+import { QtDocument } from "@/components/pdf/qt-document";
 import { CiDocument } from "@/components/pdf/ci-document";
 import { PlDocument } from "@/components/pdf/pl-document";
 
@@ -28,6 +29,8 @@ function ViewerLoading() {
 const CONFETTI = ["🎉", "🍵", "✨", "🎊", "💚", "🌿", "✨", "🎉", "🍵", "💰", "✨", "🌿"];
 
 const NEXT_HINT: Record<DocSnapshot["docType"], string> = {
+  quotation:
+    "下のボタンでPDFをダウンロードして、バイヤーにメールで送りましょう。合意が取れたら請求書(PI)の発行へ",
   proforma_invoice:
     "下のボタンでPDFをダウンロードして、バイヤーにメールで送りましょう。入金が来たら案件画面の緑のボタンへ",
   commercial_invoice:
@@ -38,6 +41,8 @@ const NEXT_HINT: Record<DocSnapshot["docType"], string> = {
 
 function renderDoc(snapshot: DocSnapshot) {
   switch (snapshot.docType) {
+    case "quotation":
+      return <QtDocument data={snapshot} />;
     case "proforma_invoice":
       return <PiDocument data={snapshot} />;
     case "commercial_invoice":

@@ -99,7 +99,11 @@ export interface DealItem {
   amount: number;
 }
 
-export type DocType = "proforma_invoice" | "commercial_invoice" | "packing_list";
+export type DocType =
+  | "quotation"
+  | "proforma_invoice"
+  | "commercial_invoice"
+  | "packing_list";
 
 export interface IssuedDocument {
   id: string;
@@ -236,7 +240,12 @@ export interface PlSnapshot {
   signature: { name: string | null };
 }
 
-export type DocSnapshot = PiSnapshot | CiSnapshot | PlSnapshot;
+/** 見積書スナップショット。PIと同構造だが銀行情報は載せない(まだ請求ではないため) */
+export interface QtSnapshot extends Omit<PiSnapshot, "docType" | "bank"> {
+  docType: "quotation";
+}
+
+export type DocSnapshot = QtSnapshot | PiSnapshot | CiSnapshot | PlSnapshot;
 
 export interface Payment {
   id: string;

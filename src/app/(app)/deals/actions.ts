@@ -10,6 +10,7 @@ import type {
   FileCategory,
   PiSnapshot,
   PlSnapshot,
+  QtSnapshot,
 } from "@/lib/types";
 
 const MAX_FILE_BYTES = 20 * 1024 * 1024; // 20MB(docs/08 §5)
@@ -418,4 +419,38 @@ export async function uploadDealFileAction(
 export async function deleteDealFileAction(dealId: string, fileId: string) {
   await repo.deleteFile(dealId, fileId);
   revalidatePath(`/deals/${dealId}`);
+}
+
+/**
+ * 見積書(Quotation)発行。PIと同構造だが銀行情報は載せない。
+ * 発行時、商談中(Inquiry/Sample Sent)の案件は「見積提示済み」に自動前進。
+ */
+export async function issueQtAction(
+  dealId: string,
+  input: { notes: string | null; validityDays: number }
+): Promise<{ error: string } | { docId: string }> {
+  const deal = await repo.getDeal(dealId);
+  if (!deal || !deal.customer) return { error: "案件が見つかりません" };
+  const blocked = countryBlockError(deal);
+  if (blocked) return { error: blocked };
+
+  const settings = await repo.getSettings();
+
+  const notesParts: string[] = [];
+  if (input.validityDays > 0) {
+    notesParts.push(
+      `This quotation is valid for ${input.validityDays} days from the date above.`
+    );
+  }
+  if (input.notes) notesParts.push(input.notes);
+
+  const snapshotBase: Omit<QtSnapshot, "docNumber"> = {
+    docType: "quotation",
+    ...(await buildInvoiceCommon(deal, settings)),
+    notes: notesParts.join("\n"),
+  };
+
+  const docId = await repo.issueDocument(dealId, "quotation", snapshotBase);
+  revalidatePath(`/deals/${dealId}`);
+  return { docId };
 }

@@ -281,7 +281,7 @@ create table documents (
   id            uuid primary key default gen_random_uuid(),
   deal_id       uuid not null references deals (id),
   doc_type      text not null check (doc_type in
-                  ('proforma_invoice', 'commercial_invoice', 'packing_list')),
+                  ('quotation', 'proforma_invoice', 'commercial_invoice', 'packing_list')),
   doc_number    text not null,
   revision      int not null default 0,
   issue_date    date not null,
@@ -332,7 +332,7 @@ declare
   v_year int := extract(year from (now() at time zone 'Asia/Tokyo'));
   v_num  int;
 begin
-  if p_type not in ('CUST', 'DEAL', 'PI', 'CI', 'PL', 'PROD') then
+  if p_type not in ('CUST', 'DEAL', 'QT', 'PI', 'CI', 'PL', 'PROD') then
     raise exception 'unknown doc_type: %', p_type;
   end if;
 

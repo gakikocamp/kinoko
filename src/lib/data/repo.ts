@@ -15,10 +15,12 @@ import type {
   PlSnapshot,
   Product,
   ProductLot,
+  QtSnapshot,
   StoredFile,
 } from "../types";
 
 export type AnySnapshotBase =
+  | Omit<QtSnapshot, "docNumber">
   | Omit<PiSnapshot, "docNumber">
   | Omit<CiSnapshot, "docNumber">
   | Omit<PlSnapshot, "docNumber">;
