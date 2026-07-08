@@ -1,0 +1,172 @@
+@import "tailwindcss";
+
+/* ============ 抹茶テーマ ============ */
+@theme {
+  /* 抹茶グリーン */
+  --color-matcha-50: #f5f8ec;
+  --color-matcha-100: #e8f0d3;
+  --color-matcha-200: #d3e3ab;
+  --color-matcha-300: #b7d17c;
+  --color-matcha-400: #9abd54;
+  --color-matcha-500: #7da437;
+  --color-matcha-600: #5f832a;
+  --color-matcha-700: #486523;
+  --color-matcha-800: #3a5120;
+  --color-matcha-900: #2c3e1b;
+  --color-matcha-950: #16210c;
+
+  /* 生成り(クリーム)背景 */
+  --color-cream-50: #fdfcf7;
+  --color-cream-100: #faf7ec;
+  --color-cream-200: #f3eeda;
+  --color-cream-300: #e9e1c4;
+
+  /* 金(アクセント) */
+  --color-gold-400: #e3b341;
+  --color-gold-500: #d4a017;
+  --color-gold-600: #b3860f;
+
+  --font-sans: var(--font-rounded), "Hiragino Maru Gothic ProN",
+    "Hiragino Kaku Gothic ProN", "BIZ UDGothic", "Yu Gothic", sans-serif;
+
+  --shadow-soft: 0 2px 12px rgb(44 62 27 / 0.07);
+  --shadow-lift: 0 8px 24px rgb(44 62 27 / 0.13);
+}
+
+body {
+  background: var(--color-cream-100);
+  color: #2b3222;
+}
+
+/* ============ 共通パーツ ============ */
+
+/* カード */
+.card {
+  background: white;
+  border: 1px solid var(--color-cream-300);
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow-soft);
+}
+.card-hover {
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lift);
+  border-color: var(--color-matcha-300);
+}
+
+/* ボタン */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, var(--color-matcha-500), var(--color-matcha-700));
+  color: white;
+  font-weight: 700;
+  padding: 0.625rem 1.375rem;
+  font-size: 0.875rem;
+  box-shadow: 0 3px 10px rgb(72 101 35 / 0.35);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+.btn-primary:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 6px 16px rgb(72 101 35 / 0.4);
+  filter: brightness(1.05);
+}
+.btn-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+.btn-primary:disabled {
+  opacity: 0.4;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  background: white;
+  border: 1.5px solid var(--color-cream-300);
+  color: #4b5540;
+  font-weight: 600;
+  padding: 0.5rem 1.125rem;
+  font-size: 0.875rem;
+  transition: all 0.12s ease;
+}
+.btn-secondary:hover {
+  border-color: var(--color-matcha-400);
+  background: var(--color-matcha-50);
+  transform: translateY(-1px);
+}
+
+/* 入力欄 */
+.input {
+  width: 100%;
+  border-radius: 0.875rem;
+  border: 1.5px solid var(--color-cream-300);
+  background: white;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.input:focus {
+  outline: none;
+  border-color: var(--color-matcha-500);
+  box-shadow: 0 0 0 3px rgb(125 164 55 / 0.15);
+}
+
+/* ふわっと出る */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fade-up {
+  animation: fade-up 0.35s ease both;
+}
+.fade-up-1 { animation: fade-up 0.35s 0.05s ease both; }
+.fade-up-2 { animation: fade-up 0.35s 0.12s ease both; }
+.fade-up-3 { animation: fade-up 0.35s 0.19s ease both; }
+.fade-up-4 { animation: fade-up 0.35s 0.26s ease both; }
+
+/* 🎉 発行お祝いの紙吹雪 */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-20px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(70vh) rotate(540deg);
+    opacity: 0;
+  }
+}
+.confetti {
+  position: fixed;
+  top: 0;
+  font-size: 1.5rem;
+  animation: confetti-fall 2.8s ease-in forwards;
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* ゆらゆら(ホームの茶碗) */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
+}
+.wiggle {
+  display: inline-block;
+  animation: wiggle 2.5s ease-in-out infinite;
+}
