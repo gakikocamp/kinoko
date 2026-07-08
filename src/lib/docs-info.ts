@@ -11,6 +11,13 @@ export const DOC_INFO: Record<
     when: string; // いつ使うか
   }
 > = {
+  quotation: {
+    icon: "📝",
+    ja: "見積書(Quotation)",
+    en: "Quotation",
+    desc: "「この条件でいかがですか?」の提案書。まだ請求ではありません",
+    when: "商談中、金額を提示するとき",
+  },
   proforma_invoice: {
     icon: "📄",
     ja: "請求書(PI)",

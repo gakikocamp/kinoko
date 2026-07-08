@@ -4,6 +4,7 @@ import { money, dateJa } from "@/lib/format";
 import { DealStatusBadge } from "@/components/badges";
 import { nextActionLabel, statusStage } from "@/lib/status";
 import { FirstRunGuide } from "@/components/first-run-guide";
+import { computeReminders } from "@/lib/reminders";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +38,8 @@ export default async function HomePage() {
     active.filter((d) => statusStage(d.status) === n).length;
   const completedCount = deals.filter((d) => d.status === "completed").length;
 
+  const reminders = await computeReminders(active);
+
   const needsAction = active.filter((d) =>
     ["waiting_for_payment", "paid", "ready_to_ship"].includes(d.status)
   );
@@ -66,6 +69,37 @@ export default async function HomePage() {
       </div>
 
       <FirstRunGuide />
+
+      {/* ⏰ リマインダー(そろそろ動くべき案件を自動検知) */}
+      {reminders.length > 0 && (
+        <section className="fade-up">
+          <h2 className="flex items-center gap-2 text-base font-extrabold text-matcha-900">
+            ⏰ リマインダー
+            <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-bold text-red-600">
+              {reminders.length}
+            </span>
+          </h2>
+          <div className="mt-3 space-y-2">
+            {reminders.map((r) => (
+              <div
+                key={r.message}
+                className={`card flex items-center justify-between gap-4 border-l-8 px-5 py-3.5 ${
+                  r.severity === "urgent"
+                    ? "border-l-red-400 bg-red-50/50"
+                    : "border-l-amber-300"
+                }`}
+              >
+                <p className="text-sm font-semibold text-matcha-900">
+                  {r.icon} {r.message}
+                </p>
+                <Link href={r.href} className="btn-secondary shrink-0">
+                  {r.action} →
+                </Link>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 業務の流れ(パイプライン) */}
       <section className="fade-up-1 card p-6">

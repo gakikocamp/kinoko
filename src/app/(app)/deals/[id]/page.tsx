@@ -120,9 +120,10 @@ export default async function DealDetailPage({
           発行した書類はあとから変わりません(安心して送れます)。直したいときは案件を修正してもう一度発行するだけ
         </p>
         {canIssuePi ? (
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {(
               [
+                { type: "quotation" as const, href: `/deals/${deal.id}/qt/new` },
                 { type: "proforma_invoice" as const, href: `/deals/${deal.id}/pi/new` },
                 { type: "commercial_invoice" as const, href: `/deals/${deal.id}/ci/new` },
                 { type: "packing_list" as const, href: `/deals/${deal.id}/pl/new` },
@@ -136,13 +137,15 @@ export default async function DealDetailPage({
                 (d) => d.doc_type === "commercial_invoice" && d.status === "issued"
               );
               // いまの段階でおすすめの書類を1つだけ光らせる
-              // (PI: 商談〜見積の間 / CI: 入金後 / PL: CI発行後)
+              // (QT: 商談中 / PI: 見積合意後 / CI: 入金後 / PL: CI発行後)
               const recommended = !issued &&
-                (type === "proforma_invoice"
-                  ? stage <= 2
-                  : type === "commercial_invoice"
-                    ? stage >= 3
-                    : stage >= 3 && ciIssued);
+                (type === "quotation"
+                  ? stage <= 1
+                  : type === "proforma_invoice"
+                    ? stage === 2
+                    : type === "commercial_invoice"
+                      ? stage >= 3
+                      : stage >= 3 && ciIssued);
               return (
                 <div
                   key={type}

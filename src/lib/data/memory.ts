@@ -238,6 +238,7 @@ const productLots: ProductLot[] = [
 const seq: Record<string, number> = { CUST: 2, PROD: 2, DEAL: 2, PI: 0, CI: 0, PL: 0 };
 
 const DOC_PREFIX: Record<DocType, string> = {
+  quotation: "QT",
   proforma_invoice: "PI",
   commercial_invoice: "CI",
   packing_list: "PL",
@@ -383,6 +384,12 @@ export const memoryRepo: DataRepo = {
       const d = deals.find((x) => x.id === dealId);
       if (d && ["inquiry", "sample_sent", "quotation_sent"].includes(d.status)) {
         d.status = "pi_issued";
+      }
+    }
+    if (docType === "quotation") {
+      const d = deals.find((x) => x.id === dealId);
+      if (d && ["inquiry", "sample_sent"].includes(d.status)) {
+        d.status = "quotation_sent";
       }
     }
     return doc.id;

@@ -20,6 +20,7 @@ import type {
 import type { DataRepo, DealWithRefs } from "./repo";
 
 const DOC_PREFIX: Record<DocType, string> = {
+  quotation: "QT",
   proforma_invoice: "PI",
   commercial_invoice: "CI",
   packing_list: "PL",
@@ -287,18 +288,26 @@ export const supabaseRepo: DataRepo = {
       .single();
     const docId = must(data, error).id as string;
 
-    // PI発行時のみ、商談中ステータスの案件を pi_issued へ進める
-    if (docType === "proforma_invoice") {
+    // 発行に応じて商談中ステータスを自動で前進させる
+    if (docType === "proforma_invoice" || docType === "quotation") {
       const { data: deal } = await supabase
         .from("deals")
         .select("status")
         .eq("id", dealId)
         .single();
       if (
+        docType === "proforma_invoice" &&
         deal &&
         ["inquiry", "sample_sent", "quotation_sent"].includes(deal.status)
       ) {
         await this.updateDealStatus(dealId, "pi_issued");
+      }
+      if (
+        docType === "quotation" &&
+        deal &&
+        ["inquiry", "sample_sent"].includes(deal.status)
+      ) {
+        await this.updateDealStatus(dealId, "quotation_sent");
       }
     }
     return docId;
