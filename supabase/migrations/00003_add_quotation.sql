@@ -4,7 +4,7 @@
 -- ============================================================
 
 -- documents に 'quotation' を許可
-alter table documents drop constraint documents_doc_type_check;
+alter table documents drop constraint if exists documents_doc_type_check;
 alter table documents add constraint documents_doc_type_check
   check (doc_type in (
     'quotation', 'proforma_invoice', 'commercial_invoice', 'packing_list'

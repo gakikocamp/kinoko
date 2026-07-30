@@ -1,5 +1,15 @@
 export type CountryStatus = "ok" | "conditional" | "prohibited" | "unverified";
 
+export type UserRole = "admin" | "staff" | "viewer" | "pending";
+
+export interface Profile {
+  id: string;
+  email: string | null;
+  full_name: string;
+  role: UserRole;
+  created_at: string;
+}
+
 export type DealStatus =
   | "inquiry"
   | "sample_sent"

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { repo } from "@/lib/data";
 import { updateSettingsAction } from "./actions";
 
@@ -44,6 +45,19 @@ export default async function SettingsPage({
       <p className="text-sm text-matcha-700/60">
         ここで登録した内容がすべてのPDF(PI / CI / Packing List)のヘッダ・振込先・署名欄に使われます。**英語で入力してください**
       </p>
+
+      <Link
+        href="/settings/users"
+        className="card card-hover flex items-center justify-between p-4"
+      >
+        <span>
+          <span className="font-bold text-matcha-900">👥 スタッフ管理</span>
+          <span className="ml-2 text-sm text-matcha-700/60">
+            誰が使えるか・権限を管理する
+          </span>
+        </span>
+        <span className="text-matcha-600">→</span>
+      </Link>
 
       <form action={updateSettingsAction} className="space-y-5">
         <section className="space-y-4 rounded-xl border border-gray-200 bg-white p-5">
