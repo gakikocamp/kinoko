@@ -17,6 +17,7 @@ import type {
   Payment,
   Product,
   ProductLot,
+  Profile,
   StoredFile,
 } from "../types";
 import type { DataRepo, DealWithRefs } from "./repo";
@@ -221,6 +222,29 @@ const dealItems: DealItem[] = [
 
 const documents: IssuedDocument[] = [];
 const dealCartons: DealCarton[] = [];
+const profiles: Profile[] = [
+  {
+    id: "user-me",
+    email: "demo@matcha-ninja.example",
+    full_name: "あなた(管理者)",
+    role: "admin",
+    created_at: "2026-06-01T00:00:00Z",
+  },
+  {
+    id: "user-staff",
+    email: "kako@matcha-ninja.example",
+    full_name: "加工スタッフ 花子",
+    role: "staff",
+    created_at: "2026-06-15T00:00:00Z",
+  },
+  {
+    id: "user-pending",
+    email: "newbie@example.com",
+    full_name: "",
+    role: "pending",
+    created_at: "2026-07-05T00:00:00Z",
+  },
+];
 const payments: Payment[] = [];
 const dealFiles: (StoredFile & { deal_id: string })[] = [];
 const productLots: ProductLot[] = [
@@ -464,6 +488,22 @@ export const memoryRepo: DataRepo = {
       lot.coa_file_path = file.fileName;
       lot.coa_url = `data:${file.mimeType};base64,${file.base64}`;
     }
+  },
+
+  async currentRole() {
+    return "admin" as const;
+  },
+  async listProfiles() {
+    // 承認待ちを上に、その後作成順
+    return [...profiles].sort((a, b) => {
+      if (a.role === "pending" && b.role !== "pending") return -1;
+      if (b.role === "pending" && a.role !== "pending") return 1;
+      return a.created_at.localeCompare(b.created_at);
+    });
+  },
+  async updateProfileRole(id, role) {
+    const p = profiles.find((x) => x.id === id);
+    if (p) p.role = role;
   },
 
   async dashboardCounts() {

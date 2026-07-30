@@ -10,6 +10,7 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   let userEmail = "demo@matcha-ninja.example";
+  let isAdmin = true; // demoでは管理者として表示
   if (!isDemoMode) {
     const supabase = await createClient();
     const {
@@ -25,6 +26,7 @@ export default async function AppLayout({
       .select("role")
       .eq("id", user.id)
       .maybeSingle();
+    isAdmin = profile?.role === "admin";
     if (!profile || profile.role === "pending") {
       return (
         <main className="flex min-h-screen items-center justify-center bg-cream-100 px-4">
@@ -61,7 +63,7 @@ export default async function AppLayout({
           </p>
         </div>
 
-        <NavLinks />
+        <NavLinks isAdmin={isAdmin} />
 
         <div className="p-4">
           {isDemoMode ? (

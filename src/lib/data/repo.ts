@@ -15,8 +15,10 @@ import type {
   PlSnapshot,
   Product,
   ProductLot,
+  Profile,
   QtSnapshot,
   StoredFile,
+  UserRole,
 } from "../types";
 
 export type AnySnapshotBase =
@@ -134,6 +136,12 @@ export interface DataRepo {
     lotId: string,
     file: { fileName: string; mimeType: string; base64: string }
   ): Promise<void>;
+
+  /** ログイン中ユーザーのロール(demoは 'admin') */
+  currentRole(): Promise<UserRole>;
+  /** スタッフ管理: 全ユーザー一覧・ロール変更(adminのみRLSで許可) */
+  listProfiles(): Promise<Profile[]>;
+  updateProfileRole(id: string, role: UserRole): Promise<void>;
 
   dashboardCounts(): Promise<{
     activeDeals: number;

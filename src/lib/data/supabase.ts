@@ -15,7 +15,9 @@ import type {
   Payment,
   Product,
   ProductLot,
+  Profile,
   StoredFile,
+  UserRole,
 } from "../types";
 import type { DataRepo, DealWithRefs } from "./repo";
 
@@ -457,6 +459,37 @@ export const supabaseRepo: DataRepo = {
       .update({ coa_file_path: path })
       .eq("id", lotId)
       .eq("product_id", productId);
+    if (error) throw new Error(error.message);
+  },
+
+  async currentRole() {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return "pending" as UserRole;
+    const { data } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+    return ((data?.role as UserRole) ?? "pending") as UserRole;
+  },
+  async listProfiles() {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .order("created_at");
+    return must(data, error) as Profile[];
+  },
+  async updateProfileRole(id, role) {
+    const supabase = await createClient();
+    // RLS: admin のみ更新可(profiles_admin_update ポリシー)
+    const { error } = await supabase
+      .from("profiles")
+      .update({ role })
+      .eq("id", id);
     if (error) throw new Error(error.message);
   },
 
